@@ -59,7 +59,7 @@
 		B6D7DC9C237098380020B58F = {
 			isa = PBXGroup;
 			children = (
-				B6D7DCA7237098380020B58F /* Projet */,
+				B6D7DCA7237098380020B58F /* code_files */,
 				B6D7DCA6237098380020B58F /* Products */,
 				B620BF842370B12D00DA13CE /* Frameworks */,
 			);
@@ -73,14 +73,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		B6D7DCA7237098380020B58F /* Projet */ = {
+		B6D7DCA7237098380020B58F /* code_files */ = {
 			isa = PBXGroup;
 			children = (
 				B6D7DCA8237098380020B58F /* main.c */,
 				B65BF0BF237099BA00F1020F /* connectionBDD.h */,
 				B65BF0C0237099BA00F1020F /* connectionBDD.c */,
 			);
-			path = Projet;
+			path = code_files;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
