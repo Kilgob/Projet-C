@@ -3,10 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B65BF0C1237099BA00F1020F /* connectionBDD.c in Sources */ = {isa = PBXBuildFile; fileRef = B65BF0C0237099BA00F1020F /* connectionBDD.c */; };
 		B6D7DCA9237098380020B58F /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = B6D7DCA8237098380020B58F /* main.c */; };
 /* End PBXBuildFile section */
 
@@ -23,6 +24,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		B620BF852370B12D00DA13CE /* libmysqlclient.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmysqlclient.a; path = "../../../../../../usr/local/mysql-8.0.18-macos10.14-x86_64/mysql-connector-c-6.1.11-macos10.12-x86_64/lib/libmysqlclient.a"; sourceTree = "<group>"; };
+		B620BF872370B15300DA13CE /* libmysqlclient.18.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libmysqlclient.18.dylib; path = "../../../../../../usr/local/mysql-8.0.18-macos10.14-x86_64/mysql-connector-c-6.1.11-macos10.12-x86_64/lib/libmysqlclient.18.dylib"; sourceTree = "<group>"; };
+		B620BF8A2370B17300DA13CE /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = lib; path = "../../../../../../usr/local/mysql-8.0.18-macos10.14-x86_64/mysql-connector-c-6.1.11-macos10.12-x86_64/lib"; sourceTree = "<group>"; };
+		B620BF8C2370B18E00DA13CE /* bin */ = {isa = PBXFileReference; lastKnownFileType = folder; name = bin; path = "../../../../../../usr/local/mysql-8.0.18-macos10.14-x86_64/mysql-connector-c-6.1.11-macos10.12-x86_64/bin"; sourceTree = "<group>"; };
+		B65BF0BF237099BA00F1020F /* connectionBDD.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = connectionBDD.h; sourceTree = "<group>"; };
+		B65BF0C0237099BA00F1020F /* connectionBDD.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = connectionBDD.c; sourceTree = "<group>"; };
 		B6D7DCA5237098380020B58F /* Projet */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Projet; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6D7DCA8237098380020B58F /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -38,11 +45,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B620BF842370B12D00DA13CE /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B620BF8C2370B18E00DA13CE /* bin */,
+				B620BF8A2370B17300DA13CE /* lib */,
+				B620BF872370B15300DA13CE /* libmysqlclient.18.dylib */,
+				B620BF852370B12D00DA13CE /* libmysqlclient.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		B6D7DC9C237098380020B58F = {
 			isa = PBXGroup;
 			children = (
 				B6D7DCA7237098380020B58F /* Projet */,
 				B6D7DCA6237098380020B58F /* Products */,
+				B620BF842370B12D00DA13CE /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -58,6 +77,8 @@
 			isa = PBXGroup;
 			children = (
 				B6D7DCA8237098380020B58F /* main.c */,
+				B65BF0BF237099BA00F1020F /* connectionBDD.h */,
+				B65BF0C0237099BA00F1020F /* connectionBDD.c */,
 			);
 			path = Projet;
 			sourceTree = "<group>";
@@ -88,6 +109,9 @@
 		B6D7DC9D237098380020B58F /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				KnownAssetTags = (
+					mysql,
+				);
 				LastUpgradeCheck = 1110;
 				ORGANIZATIONNAME = "Frédéric FLACELIERE";
 				TargetAttributes = {
@@ -97,7 +121,7 @@
 				};
 			};
 			buildConfigurationList = B6D7DCA0237098380020B58F /* Build configuration list for PBXProject "Projet" */;
-			compatibilityVersion = "Xcode 9.3";
+			compatibilityVersion = "Xcode 11.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -119,6 +143,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B65BF0C1237099BA00F1020F /* connectionBDD.c in Sources */,
 				B6D7DCA9237098380020B58F /* main.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -238,16 +263,46 @@
 		B6D7DCAD237098380020B58F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				CODE_SIGN_STYLE = Automatic;
+				"HEADER_SEARCH_PATHS[arch=*]" = "/usr/local/mysql-8.0.18-macos10.14-x86_64/mysql-connector-c-6.1.11-macos10.12-x86_64/include";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"/usr/local/mysql-8.0.18-macos10.14-x86_64/mysql-connector-c-6.1.11-macos10.12-x86_64/lib",
+				);
+				"LIBRARY_SEARCH_PATHS[arch=*]" = "/usr/local/mysql-8.0.18-macos10.14-x86_64/mysql-connector-c-6.1.11-macos10.12-x86_64/lib";
+				"MTL_ENABLE_DEBUG_INFO[arch=*]" = INCLUDE_SOURCE;
+				OTHER_CFLAGS = "";
+				OTHER_CPLUSPLUSFLAGS = "";
+				OTHER_LDFLAGS = "-lmysqlclient";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = YES;
+				USER_HEADER_SEARCH_PATHS = "";
+				"USER_HEADER_SEARCH_PATHS[arch=*]" = "/usr/local/mysql-8.0.18-macos10.14-x86_64/mysql-connector-c-6.1.11-macos10.12-x86_64/include";
 			};
 			name = Debug;
 		};
 		B6D7DCAE237098380020B58F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				CODE_SIGN_STYLE = Automatic;
+				HEADER_SEARCH_PATHS = "/usr/local/mysql-8.0.18-macos10.14-x86_64/mysql-connector-c-6.1.11-macos10.12-x86_64/include";
+				"HEADER_SEARCH_PATHS[arch=*]" = "/usr/local/mysql-8.0.18-macos10.14-x86_64/mysql-connector-c-6.1.11-macos10.12-x86_64/include";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"/usr/local/mysql-8.0.18-macos10.14-x86_64/mysql-connector-c-6.1.11-macos10.12-x86_64/lib",
+				);
+				"LIBRARY_SEARCH_PATHS[arch=*]" = "/usr/local/mysql-8.0.18-macos10.14-x86_64/mysql-connector-c-6.1.11-macos10.12-x86_64/lib";
+				OTHER_CFLAGS = "";
+				OTHER_CPLUSPLUSFLAGS = "";
+				OTHER_LDFLAGS = "-lmysqlclient";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = YES;
+				USER_HEADER_SEARCH_PATHS = "";
+				"USER_HEADER_SEARCH_PATHS[arch=*]" = "/usr/local/mysql-8.0.18-macos10.14-x86_64/mysql-connector-c-6.1.11-macos10.12-x86_64/include";
 			};
 			name = Release;
 		};
