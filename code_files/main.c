@@ -1,27 +1,18 @@
-//
-//  main.c
-//  Projet
-//
-//  Created by Frédéric FLACELIERE on 04/11/2019.
-//  Copyright © 2019 Frédéric FLACELIERE. All rights reserved.
-//
-
-//#include "connectionBDD.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <mysql.h>
+#include <MYSQL/mysql.h>
 
 
-int main(int argc, const char * argv[]) {
+int main(int argc, char **argv) {
+
     MYSQL mysql;
     mysql_init(&mysql);
-    
+
     // insert code here...
     printf("Hello, World!\n");
     printf("Hello, World a seconde time!\n");
-    
+
 
 
     mysql_options(&mysql,MYSQL_READ_DEFAULT_GROUP,"option");
