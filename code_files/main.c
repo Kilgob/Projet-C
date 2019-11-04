@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <MYSQL/mysql.h>
+#include <mysql.h>
 
 
 int main(/*int argc, char **argv*/) {
