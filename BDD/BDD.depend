@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1572892996 source:c:\users\clément mekil\onedrive\cours\2ème année\langage c - m. sananes\projet janvier 2020\bdd\main.c
+	<stdio.h>
+	<stdlib.h>
+	<winsock.h>
+	<MYSQL/mysql.h>
+
