@@ -1,11 +1,3 @@
-//
-//  main.c
-//  Projet
-//
-//  Created by Frédéric FLACELIERE on 04/11/2019.
-//  Copyright © 2019 Frédéric FLACELIERE. All rights reserved.
-//
-
 #include "connectionBDD.h"
 
 #include <stdio.h>
@@ -14,7 +6,7 @@
 #include <MYSQL/mysql.h>
 
 
-int main(int argc, char **argv) {
+int main(/*int argc, char **argv*/) {
 
     MYSQL mysql;
     mysql_init(&mysql);
