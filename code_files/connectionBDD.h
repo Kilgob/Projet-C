@@ -11,4 +11,6 @@
 
 #include <stdio.h>
 
+int test(void);
+
 #endif /* connectionBDD_h */

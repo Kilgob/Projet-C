@@ -7,3 +7,7 @@
 //
 
 #include "connectionBDD.h"
+
+int test(){
+    return 1;
+}
