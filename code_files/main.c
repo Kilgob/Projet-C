@@ -1,33 +1,56 @@
-#include "connectionBDD.h"
+#include "link.h"
 
 #include <stdio.h>
 #include <stdlib.h>
-
-#include <mysql.h>
-
-
-int main(/*int argc, char **argv*/) {
-
-    MYSQL mysql;
-    mysql_init(&mysql);
-
-    // insert code here...
-    printf("Hello, World!\n");
-    printf("Hello, World a seconde time!\n");
-    printf("%d",test());
+#include <string.h>
+#include <curl.h>
+#include <my_xml.h>
+//#include <math.h>
+#include <gtk/gtk.h>
+//#include <iostream>
 
 
-
-    mysql_options(&mysql,MYSQL_READ_DEFAULT_GROUP,"option");
-
-    if(mysql_real_connect(&mysql,"54.37.153.32","cproject","Fr3dCl3m","mainCBase",3306,NULL,0))
-    {
-        printf("DONE ! :D");
-        mysql_close(&mysql);
-    }
-    else
-    {
-        printf("Une erreur s'est produite lors de la connexion à la BDD!");
-    }
-    return 0;
+static void print_hello (GtkWidget *widget,gpointer data){
+    g_print ("Hello World\n");
 }
+
+static void activate (GtkApplication *app,gpointer user_data){
+    GtkWidget *window;
+    GtkWidget *button;
+    GtkWidget *button_box;
+
+    window = gtk_application_window_new (app);
+    gtk_window_set_title (GTK_WINDOW (window), "Bouton test");
+    gtk_window_set_default_size (GTK_WINDOW (window), 200, 200);
+
+    button_box = gtk_button_box_new (GTK_ORIENTATION_HORIZONTAL);
+    gtk_container_add (GTK_CONTAINER (window), button_box);
+
+    button = gtk_button_new_with_label ("Hello World"); //Créer la box avec label
+    g_signal_connect (button, "clicked", G_CALLBACK (print_hello), NULL); //appel de fonction lors du click
+    g_signal_connect_swapped (button, "clicked", G_CALLBACK (gtk_widget_destroy), window); // ferme la box au click
+    gtk_container_add (GTK_CONTAINER (button_box), button);
+
+    gtk_widget_show_all (window);
+}
+
+
+int main(int argc, char **argv){
+    GtkApplication *app;
+    int status;
+
+    app = gtk_application_new ("org.gtk.example", G_APPLICATION_FLAGS_NONE);
+    g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
+    status = g_application_run (G_APPLICATION (app), argc, argv);
+    g_object_unref (app);
+    
+    printf("%s",connection_bdd());
+//    printf("%",json_parser());
+    json_parser();
+
+    
+    return status;
+}
+
+    
+
