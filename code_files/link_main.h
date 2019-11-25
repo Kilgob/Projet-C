@@ -6,12 +6,21 @@
 //  Copyright © 2019 Frédéric FLACELIERE. All rights reserved.
 //
 #include <stdio.h>
+#include <gtk/gtk.h>
 
+struct InputLogin{
+    GtkWidget *InputTextIP;
+    GtkWidget *InputTextID;
+    GtkWidget *InputTextPass;
+    GtkWidget *InputValidate;
+    GtkWidget *button_box_login;
+    int returnStatusConnexion;
+};
 
 #ifndef connectionBDD_h
 #define connectionBDD_h
 
-char* connection_bdd(void);
+void connection_bdd(GtkWidget *widget, struct InputLogin *Data);
 
 #endif /* connectionBDD_h */
 
