@@ -7,7 +7,7 @@
 //
 
 #include "link_main.h"
-#include <json.h>
+#include <json-c/json.h>
 #include <stdio.h>
 
 #ifdef TEST_FORMATTED

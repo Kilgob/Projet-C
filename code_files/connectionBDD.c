@@ -18,7 +18,7 @@ void connection_bdd(GtkWidget *widget, struct InputLogin *Data){
     
 
     mysql_options(&mysql,MYSQL_READ_DEFAULT_GROUP,"option");
-    printf("%d\n",Data->returnStatusConnexion);
+//    printf("%d\n",Data->returnStatusConnexion);
 
     if(mysql_real_connect(&mysql,gtk_entry_get_text(GTK_ENTRY(Data->InputTextIP)),gtk_entry_get_text(GTK_ENTRY(Data->InputTextID)),gtk_entry_get_text(GTK_ENTRY(Data->InputTextPass)),"mainCBase",3306,NULL,0))
     {
@@ -36,7 +36,7 @@ void connection_bdd(GtkWidget *widget, struct InputLogin *Data){
         printf("Une erreur s'est produite lors de la connexion à la BDD\n");
 //        result = "Une erreur s'est produite lors de la connexion à la BDD!";
         Data->returnStatusConnexion = 0;
-        printf("%d\n",Data->returnStatusConnexion);
+//        printf("%d\n",Data->returnStatusConnexion);
 //        Create_main_window1.logSQLSatus = Login1.returnStatusConnexion;
     }
 

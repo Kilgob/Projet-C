@@ -3,8 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <curl.h>
-#include <my_xml.h>
+#include <curl/curl.h>
+#include <libxml/xlink.h>
+//#include <cjson/json.h>
 //#include <math.h>
 #include <gtk/gtk.h>
 //#include <iostream>
