@@ -12,6 +12,8 @@
 
 
 
+
+
 static void print_hello(GtkWidget *widget,gpointer data){
     g_print ("Hello World\n");
     g_print("%s",gtk_entry_get_text(data));
@@ -32,13 +34,15 @@ static void print_hello(GtkWidget *widget,gpointer data){
 static void activate (GtkApplication *app,gpointer user_data){
     static struct InputLogin Login1;
     static struct create_main_window Create_main_window1;
+
+    Create_main_window1.Login = &Login1;
+    
     GtkWidget *window;
     GtkWidget *button;
     GtkWidget *button_box;
     GtkWidget *boxLogin;
     GtkWidget *mainPageText;
     GtkWidget *boxConnection;
-
     
 //    Create_main_window1.app = app;
 
@@ -69,21 +73,20 @@ static void activate (GtkApplication *app,gpointer user_data){
     Login1.InputValidate = gtk_button_new_with_label("Se connecter");
     Login1.button_box_login = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_container_add (GTK_CONTAINER (Login1.button_box_login), Login1.InputValidate);
+
     
     gtk_box_pack_start(GTK_BOX(boxLogin), Login1.InputTextIP, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(boxLogin), Login1.InputTextID, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(boxLogin), Login1.InputTextPass, TRUE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(boxLogin), Login1.button_box_login, TRUE, TRUE, 0);
     //gtk_box_pack_start(GTK_BOX(boxLogin), returnStatusConnexion, TRUE, TRUE, 0);
+    //label du status de la connection
+    Create_main_window1.LabelStatusConnection = gtk_label_new("");
+    gtk_box_pack_start(GTK_BOX(boxLogin), Create_main_window1.LabelStatusConnection, TRUE, TRUE, 0);
     
-    //Stockage des adresses mémoires des inputs pour l'envois des datas
-//    gpointer *dataLogIn = g_new(gpointer,3);
-//    dataLogIn[0] = InputTextIP;
-//    dataLogIn[1] = InputTextID;
-//    dataLogIn[2] = InputTextPass;
+    
     Create_main_window1.app = app;
     Create_main_window1.oldWindow = GTK_WIDGET(window);
-    Create_main_window1.logSQLStatus = &Login1.returnStatusConnexion;
     g_signal_connect (Login1.InputValidate, "clicked", G_CALLBACK(connection_bdd), &Login1); //Envois de la structure de login pour la connecxion à la BDD
 //    printf("%d",Login1.returnStatusConnexion);
 

@@ -7,12 +7,15 @@
 //
 #include <stdio.h>
 #include <gtk/gtk.h>
+//#include "link_main.h"
 
 struct create_main_window{
     GtkWidget *oldWindow;
     GtkApplication *app;
-    int *logSQLStatus;
+    GtkWidget *LabelStatusConnection;
+    struct InputLogin *Login;
 };
+
 
 #ifndef main_window_h
 #define main_window_h

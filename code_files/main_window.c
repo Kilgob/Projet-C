@@ -7,6 +7,7 @@
 //
 
 #include "main_window.h"
+#include "link_main.h"
 
 
 //void destroy_Connection_Window(GtkWidget *widget,gpointer data){
@@ -19,11 +20,10 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
     GtkWidget *box_Main;
     GtkWidget *Box_For_Button_Deco;
     GtkWidget *Button_For_Deco;
-
     
 
-    printf("Log SQLSTATUS : %d\n",*ForCreateMainWindow->logSQLStatus);
-    if(*ForCreateMainWindow->logSQLStatus){
+    printf("Log SQLSTATUS : %d\n",ForCreateMainWindow->Login->returnStatusConnexion);
+    if(ForCreateMainWindow->Login->returnStatusConnexion){
         window_Main = gtk_application_window_new (ForCreateMainWindow->app);
         
         gtk_widget_destroy(ForCreateMainWindow->oldWindow);
@@ -49,5 +49,7 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
         
         gtk_widget_show_all (window_Main);
     }
+    else
+        gtk_label_set_text(GTK_LABEL(ForCreateMainWindow->LabelStatusConnection), "Connection refusée");
     
 }
