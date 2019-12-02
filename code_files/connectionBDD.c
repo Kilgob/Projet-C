@@ -7,8 +7,7 @@
 //
 
 #include "link_main.h"
-#include "main_window.h"
-#include <mysql.h>
+#include <stdlib.h>
 
 void connection_bdd(GtkWidget *widget, struct InputLogin *Data){
 //    char *result = malloc(sizeof(char)*100);

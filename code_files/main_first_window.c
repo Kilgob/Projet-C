@@ -1,5 +1,5 @@
 #include "link_main.h"
-#include "main_window.h"
+//#include "main_window.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -73,6 +73,12 @@ static void activate (GtkApplication *app,gpointer user_data){
     Login1.InputValidate = gtk_button_new_with_label("Se connecter");
     Login1.button_box_login = gtk_button_box_new(GTK_ORIENTATION_HORIZONTAL);
     gtk_container_add (GTK_CONTAINER (Login1.button_box_login), Login1.InputValidate);
+    
+    
+    //Pré-remplissage des labels pour gagner du temps
+    gtk_entry_set_text(GTK_ENTRY(Login1.InputTextIP) , "54.37.153.32");
+    gtk_entry_set_text(GTK_ENTRY(Login1.InputTextID), "cproject");
+    gtk_entry_set_text(GTK_ENTRY(Login1.InputTextPass), "Fr3dCl3m");
 
     
     gtk_box_pack_start(GTK_BOX(boxLogin), Login1.InputTextIP, TRUE, TRUE, 0);
