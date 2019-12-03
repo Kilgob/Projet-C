@@ -20,7 +20,7 @@ static size_t WriteMemoryCallback(void* ptr, size_t size, size_t nmemb, void* da
  
  
 //Lecture de la page web
-char* LectureWeb(char* AddURL){
+void LectureWeb(char* AddURL,char *string_curl){
     curl_global_init(CURL_GLOBAL_ALL);
 
     CURL *myHandle;
@@ -38,12 +38,12 @@ char* LectureWeb(char* AddURL){
  
     if(result!=0)
         LectureLC.size=1;
-    char Chaine[LectureLC.size];
-    strcpy(Chaine, LectureLC.buffer);
-    strcat(Chaine,"\0");
+//    string_curl[LectureLC.size];
+    strcpy(string_curl, LectureLC.buffer);
+    strcat(string_curl,"\0");
     if(LectureLC.buffer) free(LectureLC.buffer);
  
-  return Chaine;
+//  return Chaine;
 }
  
  
@@ -55,7 +55,7 @@ void get_Arrays_Base(json_object **array){
 
     strcpy(AddURL,"http://54.37.153.32:7999/migrator/tables?schema=mainCBase");
 
-    strcpy(Chaine, LectureWeb(AddURL));
+    LectureWeb(AddURL,Chaine);
 
     
     struct json_object *parsed_json;
