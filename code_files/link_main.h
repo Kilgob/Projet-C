@@ -47,6 +47,7 @@ struct BufferStruct
 };
 
 void get_Arrays_Base(json_object **array);
+int requestToBDD(const char *,const char*);
 
 #endif /* connectionBDD_h */
 

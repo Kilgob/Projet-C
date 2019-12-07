@@ -7,7 +7,7 @@
 //
 
 #include "link_main.h"
-
+#include <stdint.h>
 
 //void destroy_Connection_Window(GtkWidget *widget,gpointer data){
 //    (void)(G_CALLBACK(gtk_widget_destroy)), data;
@@ -29,6 +29,7 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
         struct json_object *Column_type;
         size_t n_Col_tab;
         size_t i;
+        uint8_t t = 0;
         
         GtkWidget *window_Main;
         GtkWidget *mainPageLabel;
@@ -68,6 +69,13 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
             column_Type[i] = gtk_check_button_new_with_label(json_object_get_string(Column_type));
             gtk_box_pack_start(GTK_BOX(box_Main), table_Name[i], TRUE, TRUE, 0);
             gtk_box_pack_start(GTK_BOX(box_Main), column_Type[i], TRUE, TRUE, 0);
+            
+            
+            //Fonction pour créer le JSON de requête à la BDD
+            t = requestToBDD(json_object_get_string(Table_name),json_object_get_string(Column_type));
+            printf("%d",t);
+            
+            
             
         }
         

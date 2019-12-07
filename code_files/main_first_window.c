@@ -1,10 +1,11 @@
 #include "link_main.h"
+#include "xml_parser.h"
 //#include "main_window.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <curl/curl.h>
-#include <libxml/xlink.h>
+//#include <libxml/xlink.h>
 //#include <cjson/json.h>
 //#include <math.h>
 #include <gtk/gtk.h>
@@ -18,7 +19,6 @@ static void print_hello(GtkWidget *widget,gpointer data){
     g_print ("Hello World\n");
     g_print("%s",gtk_entry_get_text(data));
 }
-
 
 
 //static void test_connection(GtkWidget *widget, struct InputLogin *Data){
@@ -46,6 +46,9 @@ static void activate (GtkApplication *app,gpointer user_data){
     
 //    Create_main_window1.app = app;
 
+    //Fonction de texte du xml
+    xml_to_text();
+    text_to_xml();
     
     window = gtk_application_window_new (app);
     gtk_window_set_title (GTK_WINDOW (window), "Se connecter");

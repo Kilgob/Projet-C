@@ -66,3 +66,31 @@ void get_Arrays_Base(json_object **array){
     
 //    return data_wb;
 }
+
+
+
+int requestToBDD(const char *Table_Name,const char *Column_Type){
+    
+    json_object *sendData = json_object_new_object();
+    json_object *sendData2 = json_object_new_object();
+    
+    //Création des chaines JSON
+//    json_object *string1 = ;
+//    json_object *string2 = ;
+    
+//    json_object *dataString1 = json_object_new_object();
+//    json_object *dataString2 = json_object_new_object();
+    
+    //Ajout des chaines JSON dans le tableau data;
+    json_object_object_add(sendData, "TABLE_NAME", json_object_new_string(Table_Name));
+    json_object_object_add(sendData, "COLUMN_TYPE", json_object_new_string(Column_Type));
+
+    
+    //Ajout du tableau data dans la requete;
+    json_object_object_add(sendData2, "Data", sendData);
+    printf("%s",json_object_to_json_string(sendData2));
+    
+    //(À modifier) Si l'envoi est passé, on return 0
+    return 0;
+    
+}
