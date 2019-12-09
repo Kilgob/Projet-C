@@ -56,6 +56,14 @@ int requestToBDD(const char *,const char*);
 #ifndef main_window_h
 #define main_window_h
 
+struct JSONReceiver{
+    GtkWidget *table_Schema;
+    GtkWidget *table_Name;
+    GtkWidget *column_Name;
+    GtkWidget *column_Type;
+    GtkWidget *column_Key;
+};
+
 void main_windows_create(GtkWidget *widget, struct create_main_window *Data);
 void destroy_Connection_Window(GtkWidget *widget,gpointer data);
 
