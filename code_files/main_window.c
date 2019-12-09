@@ -7,6 +7,7 @@
 //
 
 #include "link_main.h"
+#include "file_control.h"
 #include <stdint.h>
 
 //void destroy_Connection_Window(GtkWidget *widget,gpointer data){
@@ -56,7 +57,8 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
         //widget du retour JSON
         GtkWidget *table_Name[n_Col_tab];
         GtkWidget *column_Type[n_Col_tab];
-            
+//        struct DataCopy Data[n_Col_tab];//Structure stockant toutes les données du JSON
+        
         //afficher chaque élément du tableau
         for (i = 0; i<n_Col_tab; i++) {
 
@@ -70,6 +72,10 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
             gtk_box_pack_start(GTK_BOX(box_Main), table_Name[i], TRUE, TRUE, 0);
             gtk_box_pack_start(GTK_BOX(box_Main), column_Type[i], TRUE, TRUE, 0);
             
+//            strcpy(Data[i].tableName, json_object_get_string(Table_name));
+//            strcpy(Data[i].tableType, json_object_get_string(Column_type));
+            
+            g_signal_connect (table_Name[i], "clicked", G_CALLBACK(save_selection) , table_Name[i]);
             
             //Fonction pour créer le JSON de requête à la BDD
             t = requestToBDD(json_object_get_string(Table_name),json_object_get_string(Column_type));
@@ -77,7 +83,8 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
             
             
             
-        }
+        };
+         
         
 
         //Création du bouton de déconnexion et de son g_signal
