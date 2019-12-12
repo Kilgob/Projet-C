@@ -22,10 +22,12 @@ struct JSONReceiver{
     char column_Type[50];
     char column_Key[50];
     uint16_t i;
-    uint16_t g;
+    uint16_t cnb;
+    uint16_t cnt;
 };
 
-int save_all_columns_selection(struct JSONReceiver *Datas[]);
+int save_schema_selection(struct JSONReceiver *Datas[]);
+int save_table_selection(struct JSONReceiver *Datas[]);
 int save_selection(struct JSONReceiver *Datas);
 int delete_selection(struct JSONReceiver *Datas);
 #endif /* file_control_h */

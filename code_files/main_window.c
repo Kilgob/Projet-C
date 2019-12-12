@@ -76,7 +76,8 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
             groupDatasJSON[i] = gtk_box_new(FALSE, 80);
             char check_Name_Base[50];
             char check_Name_Table[50];
-            uint16_t w = 0;
+            uint16_t cnbs = 0;
+            uint16_t cnts = 0;
             arrayBase_buffer = json_object_array_get_idx(arraysBase, i);
             //                    printf("%lu. %s\n", i+1,json_object_get_string(arrayBase_buffer));
             json_object_object_get_ex(arrayBase_buffer, "TABLE_NAME", &Table_Name);
@@ -106,17 +107,21 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
             if(strcmp(check_Name_Base, json_object_get_string(Table_Schema))){
                 strcpy(check_Name_Base, json_object_get_string(Table_Schema));
                 gtk_grid_attach (GTK_GRID (grid), table_Schema[i], 0, j++, 1, 2);
-                w = i;
+                cnbs = i;
                 Data[i].i = (int)i;
-                Data[i].g = 0;
-                g_signal_connect (table_Name[i], "clicked", G_CALLBACK(save_all_columns_selection) , &Data[i]);
+                Data[i].cnb = 0;
+                g_signal_connect (table_Name[i], "clicked", G_CALLBACK(save_schema_selection) , &Data[i]);
             }
-            Data[w].g++;// Permet de savoir le nombre de fois que l'on doit boucler pour la copie
+            Data[cnbs].cnb++;// Permet de savoir le nombre de fois que l'on doit boucler pour la copie
             if(strcmp(check_Name_Table, json_object_get_string(Table_Name))){
                 strcpy(check_Name_Table, json_object_get_string(Table_Name));
                 gtk_grid_attach (GTK_GRID (grid), table_Name[i], 1, j, 2, 1);
+                cnts = i;
+                Data[i].i = (int)i;
+                Data[i].cnt = 0;
+                g_signal_connect (table_Name[i], "clicked", G_CALLBACK(save_table_selection) , &Data[i]);
             }
-
+            Data[cnts].cnt++;// Permet de savoir le nombre de fois que l'on doit boucler pour la copie
 //            gtk_grid_attach (GTK_GRID (grid), column_Name[i], 3, j, 1, 1);
 //            gtk_grid_attach (GTK_GRID (grid), column_Type[i], 4, j, 2, 1);
 //            gtk_grid_attach (GTK_GRID (grid), column_Key[i], 7, j, 1, 1);
@@ -128,7 +133,7 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
 
             //non viable
             g_signal_connect (table_Name[i], "clicked", G_CALLBACK(delete_selection) , &Data[i]); //envoi tout sans avoir quoi écrire pour le moment
-            g_signal_connect (table_Name[i], "clicked", G_CALLBACK(save_selection) , &Data[i]);
+            g_signal_connect (column_Name[i], "clicked", G_CALLBACK(save_selection) , &Data[i]);
             
             //Fonction pour créer le JSON de requête à la BDD
             t = requestToBDD(json_object_get_string(Table_Name),json_object_get_string(Column_Type));
