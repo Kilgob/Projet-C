@@ -29,5 +29,5 @@ struct JSONReceiver{
 int save_schema_selection(struct JSONReceiver *Datas[]);
 int save_table_selection(struct JSONReceiver *Datas[]);
 int save_selection(struct JSONReceiver *Datas);
-int delete_selection(struct JSONReceiver *Datas);
+int check_delete(int, FILE *, struct JSONReceiver *Datas[]);
 #endif /* file_control_h */

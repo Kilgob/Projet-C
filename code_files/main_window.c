@@ -110,7 +110,7 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
                 cnbs = i;
                 Data[i].i = (int)i;
                 Data[i].cnb = 0;
-                g_signal_connect (table_Name[i], "clicked", G_CALLBACK(save_schema_selection) , &Data[i]);
+                g_signal_connect (table_Schema[i], "clicked", G_CALLBACK(save_schema_selection) , &Data[i]);
             }
             Data[cnbs].cnb++;// Permet de savoir le nombre de fois que l'on doit boucler pour la copie
             if(strcmp(check_Name_Table, json_object_get_string(Table_Name))){
@@ -132,7 +132,6 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
             gtk_box_set_homogeneous(GTK_BOX(groupDatasJSON[i]), TRUE);
 
             //non viable
-            g_signal_connect (table_Name[i], "clicked", G_CALLBACK(delete_selection) , &Data[i]); //envoi tout sans avoir quoi écrire pour le moment
             g_signal_connect (column_Name[i], "clicked", G_CALLBACK(save_selection) , &Data[i]);
             
             //Fonction pour créer le JSON de requête à la BDD

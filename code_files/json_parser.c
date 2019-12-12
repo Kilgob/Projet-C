@@ -63,7 +63,6 @@ void get_Arrays_Base(json_object **array){
     //Récupérer le contenu du tableau JSON "data"
     json_object_object_get_ex(parsed_json, "data", array);
     
-    
 //    return data_wb;
 }
 
