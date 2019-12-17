@@ -1,0 +1,46 @@
+[
+  {
+    "IP":"54.37.153.32",
+    "name_server":"Fred1",
+    "user_webService" : "user",
+    "pass_webService" : "pass",
+    "BDD":[
+      {
+        "name_bdd":"db",
+        "port_mysql":"5010",
+        "port_local":"3306",
+        "mdp_root":"Fr3dCl3m",
+        "bdd_type":"mysql"
+      },
+      {
+        "name_bdd":"db",
+        "port_mysql":"5011",
+        "port_local":"3306",
+        "mdp_root":"Fr3dCl3m",
+        "bdd_type":"mysql"
+      }
+    ]
+  },
+  {
+    "IP":"54.37.153.32",
+    "name_server":"Fred2",
+    "user_webService" : "user",
+    "pass_webService" : "pass",
+    "BDD":[
+      {
+        "name_bdd":"bdd base 2",
+        "port_mysql":"5010",
+        "port_local":"3306",
+        "mdp_root":"Fr3dCl3m",
+        "bdd_type":"mysql"
+      },
+      {
+        "name_bdd":"bdd base 2",
+        "port_mysql":"5011",
+        "port_local":"3306",
+        "mdp_root":"Fr3dCl3m",
+        "bdd_type":"mysql"
+      }
+    ]
+  }
+]

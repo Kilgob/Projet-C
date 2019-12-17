@@ -24,7 +24,7 @@ void connection_bdd(GtkWidget *widget, struct InputLogin *Data){
         printf("DONE ! :D\n");
 //        result = "DONE ! :D\n";
         mysql_close(&mysql);
-        Data->returnStatusConnexion = 1;
+        //Data->returnStatusConnexion = 1;
     }
     else
     {
@@ -34,7 +34,7 @@ void connection_bdd(GtkWidget *widget, struct InputLogin *Data){
 //        printf("\n%s",result);
         printf("Une erreur s'est produite lors de la connexion à la BDD\n");
 //        result = "Une erreur s'est produite lors de la connexion à la BDD!";
-        Data->returnStatusConnexion = 0;
+        //Data->returnStatusConnexion = 0;
 //        printf("%d\n",Data->returnStatusConnexion);
 //        Create_main_window1.logSQLSatus = Login1.returnStatusConnexion;
     }

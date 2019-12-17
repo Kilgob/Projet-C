@@ -12,13 +12,44 @@
 #include <string.h>
 #include <curl/curl.h>
 
+struct Button_Connection{
+    GtkWidget *connection_button;
+    GtkWidget *connection_button_box;
+};
+
+
+struct Struct_Conf_Name_Server{
+    GtkWidget *Conf_Name_Server; //widget du fichier de conf
+//    struct Struct_Conf_Name_bdd *Conf_Name_bdd;
+    size_t nbr_bdd;
+    GtkWidget *widgConfb;
+    GtkWidget **Conf_Name_bdd;
+    GtkWidget *Boxbdd;
+    GtkWidget *boxJSON_Conf;
+};
+
+
+struct Json_Conf_BDD{
+    struct json_object *name_BDD;
+    struct json_object *PMYSQL;
+    struct json_object *PLMYSQL;
+    struct json_object *Pass_Root;
+    struct json_object *BDD_Type;
+};
+
+struct json_conf{
+    struct json_object *IP;
+    struct json_object *name_server;
+    struct json_object *user_webService;
+    struct json_object *pass_webService;
+    struct Json_Conf_BDD *bdd;
+
+};
+
 struct InputLogin{
     GtkWidget *InputTextIP;
     GtkWidget *InputTextID;
     GtkWidget *InputTextPass;
-    GtkWidget *InputValidate;
-    GtkWidget *button_box_login;
-    int returnStatusConnexion;
 };
 
 struct create_main_window{
@@ -26,6 +57,8 @@ struct create_main_window{
     GtkApplication *app;
     GtkWidget *LabelStatusConnection;
     struct InputLogin *Login;
+    int returnStatusConnexion;
+    struct json_conf *Json_conf;
 };
 
 #ifndef connectionBDD_h
@@ -46,8 +79,8 @@ struct BufferStruct
   size_t size;
 };
 
-void get_Arrays_Base(json_object **array);
-int requestToBDD(const char *,const char*);
+void get_Arrays_Base(json_object **array, struct json_conf *Json_conf);
+int requestToBDD(char *, char*);
 
 #endif /* connectionBDD_h */
 

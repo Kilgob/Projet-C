@@ -22,12 +22,23 @@ struct JSONReceiver{
     char column_Type[50];
     char column_Key[50];
     uint16_t i;
+    uint16_t j;
     uint16_t cnb;
     uint16_t cnt;
 };
 
-int save_schema_selection(struct JSONReceiver *Datas[]);
-int save_table_selection(struct JSONReceiver *Datas[]);
-int save_selection(struct JSONReceiver *Datas);
-int check_delete(int, FILE *, struct JSONReceiver *Datas[]);
+struct ExportData{
+    struct JSONReceiver *JSONDatas;
+    GtkWidget *cb_Export;
+    
+};
+
+int check_file_conf(void);
+
+
+void save_schema_selection(struct JSONReceiver *Datas[]);
+void save_table_selection(struct JSONReceiver *Datas[]);
+void save_selection(struct JSONReceiver *Datas);
+void check_delete(struct JSONReceiver *Datas[]);
+void data_export(struct ExportData *Datas);
 #endif /* file_control_h */

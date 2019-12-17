@@ -20,7 +20,7 @@ static size_t WriteMemoryCallback(void* ptr, size_t size, size_t nmemb, void* da
  
  
 //Lecture de la page web
-void LectureWeb(char* AddURL,char *string_curl){
+void LectureWeb(char* AddURL,char *string_curl, const char *user, const char *pass){
     curl_global_init(CURL_GLOBAL_ALL);
 
     CURL *myHandle;
@@ -33,6 +33,8 @@ void LectureWeb(char* AddURL,char *string_curl){
     curl_easy_setopt(myHandle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
     curl_easy_setopt(myHandle, CURLOPT_WRITEDATA, (void*)&LectureLC);
     curl_easy_setopt(myHandle, CURLOPT_URL, AddURL);
+    curl_easy_setopt(myHandle, CURLOPT_USERNAME,user);
+    curl_easy_setopt(myHandle, CURLOPT_PASSWORD,pass);
     result = curl_easy_perform(myHandle);  //voir la doc pour une gestion minimal des erreurs
     curl_easy_cleanup(myHandle);
  
@@ -43,23 +45,30 @@ void LectureWeb(char* AddURL,char *string_curl){
     strcat(string_curl,"\0");
     if(LectureLC.buffer) free(LectureLC.buffer);
  
-//  return Chaine;
+//  return Str;
 }
  
  
  
-void get_Arrays_Base(json_object **array){
+void get_Arrays_Base(json_object **array, struct json_conf *Json_conf){
     char AddURL[200];
-    char Chaine[50000];  //À changer selon vos besoin
-
-
-    strcpy(AddURL,"http://54.37.153.32:7999/migrator/tables?schema=mainCBase");
-
-    LectureWeb(AddURL,Chaine);
+    char Str[60000];  //À changer selon vos besoin
+//    printf("%s",json_object_get_string(Json_conf->IP));
+    char url[100] = "http://";
+    strcat(url, json_object_get_string(Json_conf->IP));
+    strcat(url, ":");
+    strcat(url, json_object_get_string(Json_conf->bdd->PMYSQL));
+    strcat(url, "/mysql1?get_count=true&db=");
+    strcat(url, json_object_get_string(Json_conf->bdd->name_BDD));
+//    strcpy(AddURL,"http://54.37.153.32:5010/mysql1?get_count=true&db=db");//V2
+//    strcpy(AddURL,"http://54.37.153.32:7999/migrator/tables?schema=mainCBase");//V1
+    strcpy(AddURL,url);
+       
+    LectureWeb(AddURL,Str, json_object_get_string(Json_conf->user_webService), json_object_get_string(Json_conf->pass_webService) );
 
     
     struct json_object *parsed_json;
-    parsed_json = json_tokener_parse(Chaine);
+    parsed_json = json_tokener_parse(Str);
     //Récupérer le contenu du tableau JSON "data"
     json_object_object_get_ex(parsed_json, "data", array);
     
@@ -68,18 +77,11 @@ void get_Arrays_Base(json_object **array){
 
 
 
-int requestToBDD(const char *Table_Name,const char *Column_Type){
+int requestToBDD(char *Table_Name, char *Column_Type){
     
     json_object *sendData = json_object_new_object();
     json_object *sendData2 = json_object_new_object();
-    
-    //Création des chaines JSON
-//    json_object *string1 = ;
-//    json_object *string2 = ;
-    
-//    json_object *dataString1 = json_object_new_object();
-//    json_object *dataString2 = json_object_new_object();
-    
+     
     //Ajout des chaines JSON dans le tableau data;
     json_object_object_add(sendData, "TABLE_NAME", json_object_new_string(Table_Name));
     json_object_object_add(sendData, "COLUMN_TYPE", json_object_new_string(Column_Type));

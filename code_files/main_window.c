@@ -10,19 +10,16 @@
 #include "file_control.h"
 #include <stdint.h>
 
-//void destroy_Connection_Window(GtkWidget *widget,gpointer data){
-//    (void)(G_CALLBACK(gtk_widget_destroy)), data;
-//}
-
 
 void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreateMainWindow){
     
 //    printf("Log SQLSTATUS : %d\n",ForCreateMainWindow->Login->returnStatusConnexion); //Debug du statut de connexion à la BDD
-    if(ForCreateMainWindow->Login->returnStatusConnexion){
-        
+    if(ForCreateMainWindow->returnStatusConnexion){
+        printf("%p",ForCreateMainWindow->Json_conf);
+        printf("%s",json_object_get_string(ForCreateMainWindow->Json_conf->IP));
 //        struct json_object *arraysBase = get_Arrays_Base();
         static struct json_object *arraysBase;
-        get_Arrays_Base(&arraysBase);
+        get_Arrays_Base(&arraysBase, ForCreateMainWindow->Json_conf);
         
         
         struct json_object *arrayBase_buffer;
@@ -31,9 +28,9 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
         struct json_object *Table_Schema;
         struct json_object *Column_Name;
         struct json_object *Column_Key;
-        size_t n_Col_tab;
+        const size_t n_Col_tab = (int)json_object_array_length(arraysBase);
         size_t i;
-        uint8_t t = 0;
+//        uint8_t t = 0;
         int j = 1;
         
         GtkWidget *window_Main;
@@ -42,7 +39,8 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
         GtkWidget *Box_For_Button_Deco;
         GtkWidget *Button_For_Deco;
         GtkWidget *grid;
-    
+        GtkWidget *button_Export;
+        GtkWidget *groupExport = gtk_box_new(FALSE, 1);
         
         window_Main = gtk_application_window_new(ForCreateMainWindow->app);
         
@@ -59,7 +57,7 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
         mainPageLabel = gtk_label_new("gestion de la BDD");//Nom de la fenetre
         
         
-        n_Col_tab = json_object_array_length(arraysBase); //Renvoi un long (ce qui explique le size_t)
+//        n_Col_tab = json_object_array_length(arraysBase); //Renvoi un long (ce qui explique le size_t)
         //        printf("nombre de valeure dans le tableau : %lu.\n",n_Col_tab);
 
         GtkWidget *groupDatasJSON[n_Col_tab];
@@ -70,7 +68,10 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
         GtkWidget *column_Name[n_Col_tab];
         GtkWidget *column_Key[n_Col_tab];
         struct JSONReceiver Data[n_Col_tab];//Structure stockant toutes les données du JSON
-
+//        Data = malloc(sizeof(struct JSONReceiver)*n_Col_tab);
+        static struct ExportData Export;
+        Export.JSONDatas = Data;
+        
         //afficher chaque élément du tableau
         for (i = 0; i<n_Col_tab; i++) {
             groupDatasJSON[i] = gtk_box_new(FALSE, 80);
@@ -79,7 +80,7 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
             uint16_t cnbs = 0;
             uint16_t cnts = 0;
             arrayBase_buffer = json_object_array_get_idx(arraysBase, i);
-            //                    printf("%lu. %s\n", i+1,json_object_get_string(arrayBase_buffer));
+//            printf("%lu. %s\n", i+1,json_object_get_string(arrayBase_buffer));
             json_object_object_get_ex(arrayBase_buffer, "TABLE_NAME", &Table_Name);
             json_object_object_get_ex(arrayBase_buffer, "COLUMN_TYPE", &Column_Type);
             json_object_object_get_ex(arrayBase_buffer, "TABLE_SCHEMA", &Table_Schema);
@@ -110,7 +111,7 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
                 cnbs = i;
                 Data[i].i = (int)i;
                 Data[i].cnb = 0;
-                g_signal_connect (table_Schema[i], "clicked", G_CALLBACK(save_schema_selection) , &Data[i]);
+//                g_signal_connect (table_Schema[i], "clicked", G_CALLBACK(save_schema_selection) , &Data[i]);
             }
             Data[cnbs].cnb++;// Permet de savoir le nombre de fois que l'on doit boucler pour la copie
             if(strcmp(check_Name_Table, json_object_get_string(Table_Name))){
@@ -130,17 +131,11 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
             gtk_box_pack_start(GTK_BOX(groupDatasJSON[i]), column_Type[i], FALSE, TRUE, 0);
             gtk_box_pack_start(GTK_BOX(groupDatasJSON[i]), column_Key[i], FALSE, TRUE, 0);
             gtk_box_set_homogeneous(GTK_BOX(groupDatasJSON[i]), TRUE);
-
-            //non viable
-            g_signal_connect (column_Name[i], "clicked", G_CALLBACK(save_selection) , &Data[i]);
             
-            //Fonction pour créer le JSON de requête à la BDD
-            t = requestToBDD(json_object_get_string(Table_Name),json_object_get_string(Column_Type));
-            printf("%d",t);
-            
-            
-            
-        };
+            g_signal_connect_swapped (column_Name[i], "clicked", G_CALLBACK(check_delete), &Data[i]);
+            g_signal_connect_swapped (column_Name[i], "clicked", G_CALLBACK(save_selection) , &Data[i]);
+        };       
+        printf("%p",&Data[0]);
         ++j;//Pour placer le bouton "Quitter" sur la ligne suivante
          
 
@@ -153,6 +148,19 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
         gtk_box_pack_start(GTK_BOX(Box_For_Button_Deco),Button_For_Deco, TRUE, TRUE, 0);
 //        gtk_container_add(GTK_CONTAINER(box_Main),Box_For_Button_Deco);
         gtk_grid_attach (GTK_GRID (grid), Box_For_Button_Deco, 0, j, 1, 1);
+        
+        //bouton export
+        Export.cb_Export = gtk_combo_box_text_new();
+        button_Export = gtk_button_new_with_label("Exporter la sélection");
+//        g_signal_connect (button_Export, "clicked", G_CALLBACK (data_export), &Data);
+        gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(Export.cb_Export), "0", "JSON");//0/1/2 car le switch attend du int
+        gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(Export.cb_Export), "1", "XML");
+        gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(Export.cb_Export), "2", "MLD");
+        
+        gtk_box_pack_start(GTK_BOX(groupExport), button_Export, TRUE, TRUE, 0);
+        gtk_box_pack_start(GTK_BOX(groupExport), Export.cb_Export, TRUE, TRUE, 0);
+        gtk_grid_attach(GTK_GRID (grid), groupExport, 0, 300, 50, 50);
+        
         gtk_widget_show_all (window_Main);
     }
     else
