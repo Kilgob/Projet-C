@@ -15,7 +15,7 @@
 #include <json-c/json.h>
 #include <stdint.h>
 
-struct JSONReceiver{
+struct JSONReceiver{ //encore (à) utilisée ?
     char table_Schema[50];
     char table_Name[50];
     char column_Name[50];
@@ -27,9 +27,9 @@ struct JSONReceiver{
     uint16_t cnt;
 };
 
-struct ExportData{
-    struct JSONReceiver *JSONDatas;
-    GtkWidget *cb_Export;
+struct ExportData{ //encore (à) utilisée ?
+    GtkWidget *target_Folder;
+    GtkWidget *target_Type;
     
 };
 
@@ -48,9 +48,9 @@ struct WidgetBDD{
     GtkWidget **column_Name;
     GtkWidget **column_Key;
     char *array_NameBis[50];//le widget est stocké ailleurs donc meilleur facon de le récupérer
-    int nbr_Array;
+    int nbr_Array; //encore utilisée ?
     int nbr_Column;
-
+    struct ExportData *Export_Info;
 };
 
 struct desactivate{
@@ -59,13 +59,12 @@ struct desactivate{
 };
 
 int check_file_conf(void);
-
-
-void save_schema_selection(struct JSONReceiver *Datas[]);
 void save_table_selection(struct Recup_Widgets *Data);
-void save_selection(struct JSONReceiver *Datas);
-void check_delete(struct JSONReceiver *Datas[]);
 void data_export(struct WidgetBDD *Datas);
 
+int export_MLD(struct WidgetBDD *Data, FILE *fileSave);
+int export_CSV(struct WidgetBDD *Data, FILE *fileSave);
+int export_JSON(struct WidgetBDD *Data, FILE *fileSave);
+int export_XML(struct WidgetBDD *Data, FILE *fileSave);
 //void datas_Migration_base(struct ExportData *Datas){
 #endif /* file_control_h */

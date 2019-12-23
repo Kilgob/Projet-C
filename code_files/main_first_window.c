@@ -89,10 +89,9 @@ static void activate (GtkApplication *app,gpointer user_data){
     GtkWidget *mainPageText;
     GtkWidget *boxConnection; //box regroupant tout
     
-    GtkWidget *grid = gtk_grid_new ();
+    GtkWidget *grid = gtk_grid_new();
 
 
-    
     FILE *PF_json_Conf;
     char Json_Conf [50000];
     PF_json_Conf = fopen("/Users/fred/OneDrive/ESGI/Annee2/ProjetC/conf_bdd.json", "r");
