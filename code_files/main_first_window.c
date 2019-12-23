@@ -112,6 +112,7 @@ static void activate (GtkApplication *app,gpointer user_data){
     window = gtk_application_window_new (app);
     gtk_window_set_title (GTK_WINDOW (window), "Se connecter");
     gtk_window_set_default_size (GTK_WINDOW (window), 600, 400);
+    gtk_window_set_resizable(GTK_WINDOW(window), FALSE);
     gtk_container_add (GTK_CONTAINER (window), grid);
     //Box contenant les widgets
     boxConnection = gtk_box_new(TRUE, 0);
