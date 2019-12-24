@@ -22,6 +22,7 @@ struct Struct_Conf_Name_Server{
     GtkWidget *Conf_Name_Server; //widget du fichier de conf
 //    struct Struct_Conf_Name_bdd *Conf_Name_bdd;
     size_t nbr_bdd;
+    size_t nbr_server;
     GtkWidget *widgConfb;
     GtkWidget **Conf_Name_bdd;
     GtkWidget *Boxbdd;
@@ -59,6 +60,7 @@ struct create_main_window{
     struct InputLogin *Login;
     int returnStatusConnexion;
     struct json_conf *Json_conf;
+    struct Struct_Conf_Name_Server *Servers_and_bdds;
 };
 
 #ifndef connectionBDD_h

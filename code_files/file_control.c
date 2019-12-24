@@ -67,10 +67,13 @@ void data_export(struct WidgetBDD *Datas){
     char Target[strlen(gtk_entry_get_text(GTK_ENTRY(Datas->Export_Info->target_Folder))+ 5)];
     strcpy(Target, gtk_entry_get_text(GTK_ENTRY(Datas->Export_Info->target_Folder)));
     strcat(Target, ".");
-    strcat(Target,gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(Datas->Export_Info->target_Type)));
+    if(gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(Datas->Export_Info->target_Type)) != NULL)
+        strcat(Target,gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(Datas->Export_Info->target_Type)));
+    else
+        status = 1;
 //    printf("%s\n",Target);
     if((fileSave = fopen(Target, "w")) == NULL)
-        printf("test\n");//ajouter un label pour confirmer l'ouverture possible du fichier (pb de droit donc erreur par exemple)
+        status = 1;
     
     switch (gtk_combo_box_get_active(GTK_COMBO_BOX(Datas->Export_Info->target_Type))) {
         case 0:
@@ -88,38 +91,79 @@ void data_export(struct WidgetBDD *Datas){
         break;
             
         default:
-            break;//ajouter un label indiquant un mauvais choix (le choix blanc)
+            status = 1;
+//            gtk_label_set_text(GTK_LABEL(Datas->Export_Info->label_Status), "Erreur lors du choix");
     }
     if(status == 0) //actuellement, les fonctions ne retournent que 0
-        printf("test\n");//export effectué
+        gtk_label_set_text(GTK_LABEL(Datas->Export_Info->label_Status), "Exportation réussi !");//export effectué
     else
-        printf("test\n"); //export reporté
+        gtk_label_set_text(GTK_LABEL(Datas->Export_Info->label_Status), "Échec de l'exportation...\nVérifier votre choix d'export et les droits du dossiers"); //export reporté
     
-
+    fclose(fileSave);
 }
 
 
 
 
 int export_MLD(struct WidgetBDD *Datas, FILE *fileSave){
+    int i;
+    char check_Name[50];
+    char check_Pri[50];
+    for(i = 0; i < Datas->nbr_Column; i++){
+        if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(Datas->column_Name[i]))){
+            if(strcmp(check_Name, gtk_button_get_label(GTK_BUTTON(Datas->array_Name[i])))){
+                strcpy(check_Name, gtk_button_get_label(GTK_BUTTON(Datas->array_Name[i])));
+                fprintf(fileSave, "DROP TABLE IF EXISTS '%s';\n",gtk_button_get_label(GTK_BUTTON(Datas->array_Name[i])));
+            }
+            fprintf(fileSave,"CREATE TABLE '%s'; \n",gtk_button_get_label(GTK_BUTTON(Datas->array_Name[i])));
+            fprintf(fileSave,"ALTER TABLE '%s' ADD '%s' '%s';\n",gtk_button_get_label(GTK_BUTTON(Datas->array_Name[i])),gtk_button_get_label(GTK_BUTTON(Datas->column_Name[i])),gtk_label_get_text(GTK_LABEL(Datas->column_Type[i])));
+            if(strcmp(check_Pri, gtk_label_get_text(GTK_LABEL(Datas->column_Key[i])))){
+                strcpy(check_Pri, gtk_label_get_text(GTK_LABEL(Datas->column_Key[i])));
+                fprintf(fileSave,"ALTER TABLE '%s' ADD PRIMARY KEY ('%s'); \n",gtk_button_get_label(GTK_BUTTON(Datas->array_Name[i])),gtk_label_get_text(GTK_LABEL(Datas->column_Key[i])));
+            }
+                
+        }
+    }
     return 0;
 }
 int export_CSV(struct WidgetBDD *Datas, FILE *fileSave){
     int i;
     for(i = 0; i < Datas->nbr_Column; i++){
         if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(Datas->column_Name[i]))){
-            printf("%s ",gtk_button_get_label(GTK_BUTTON(Datas->array_Name[i])));
-            printf("%s ",gtk_button_get_label(GTK_BUTTON(Datas->column_Name[i])));
-            printf("%s ",gtk_label_get_text(GTK_LABEL(Datas->column_Type[i])));
-            printf("%s\n",gtk_label_get_text(GTK_LABEL(Datas->column_Key[i])));
+            fprintf(fileSave,"%s,",gtk_button_get_label(GTK_BUTTON(Datas->array_Name[i])));
+            fprintf(fileSave,"%s,",gtk_button_get_label(GTK_BUTTON(Datas->column_Name[i])));
+            fprintf(fileSave,"%s,",gtk_label_get_text(GTK_LABEL(Datas->column_Type[i])));
+            fprintf(fileSave,"%s\n",gtk_label_get_text(GTK_LABEL(Datas->column_Key[i])));
         }
     }
     return 0;
 }
 int export_JSON(struct WidgetBDD *Datas, FILE *fileSave){
+    int i;
+    struct json_object *JsonBuffer;
+    struct json_object *JsonArray;
+    struct json_object *JsonColumn;
+    JsonBuffer = json_object_new_object();
+   
+    JsonColumn = json_object_new_object();;
+    
+    JsonBuffer = json_object_new_array();
+    
+    for(i = 0; i < Datas->nbr_Column; i++){
+        JsonArray = json_object_new_object();
+        if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(Datas->column_Name[i]))){
+            json_object_object_add(JsonArray, "array name", json_object_new_string(gtk_button_get_label(GTK_BUTTON(Datas->array_Name[i])))) ;
+            json_object_object_add(JsonArray, "column name", json_object_new_string(gtk_button_get_label(GTK_BUTTON(Datas->column_Name[i]))));
+            json_object_object_add(JsonArray, "column type", json_object_new_string(gtk_label_get_text(GTK_LABEL(Datas->column_Type[i]))));
+            json_object_object_add(JsonArray, "column key", json_object_new_string(gtk_label_get_text(GTK_LABEL(Datas->column_Key[i]))));
+            json_object_array_add(JsonBuffer, JsonArray);
+        }
+    }
+    fprintf(fileSave,"%s",json_object_get_string(JsonBuffer));
     return 0;
 }
 int export_XML(struct WidgetBDD *Datas, FILE *fileSave){
+    //mdrr elle est vide
     return 0;
 }
 

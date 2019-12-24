@@ -158,6 +158,7 @@ static void activate (GtkApplication *app,gpointer user_data){
 
     struct Struct_Conf_Name_Server *Struct_Conf_Name_Server;
     Struct_Conf_Name_Server = malloc(sizeof(struct Struct_Conf_Name_Server) *2)/*[n_Col_tab2]*/;
+    Struct_Conf_Name_Server->nbr_server = n_Col_tab2;
     
     int g = 1;
     
@@ -208,7 +209,7 @@ static void activate (GtkApplication *app,gpointer user_data){
         }
     }
     
-    
+    Create_main_window1.Servers_and_bdds = Struct_Conf_Name_Server;
     
     Create_main_window1.returnStatusConnexion = 1;
     gtk_box_pack_start(GTK_BOX(boxConnection),Button_Connection.connection_button_box, TRUE, TRUE, 0);

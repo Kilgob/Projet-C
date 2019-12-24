@@ -78,26 +78,34 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
         
 //        GtkWidget *window_Main;
         GtkWidget *mainPageLabel;
+        GtkWidget *Information_Scroll_Box;
 //        GtkWidget *box_Main;
         GtkWidget *Box_For_Button_Deco;
         GtkWidget *Button_For_Deco;
         GtkWidget *grid;
+        GtkWidget *grid2;
         GtkWidget *button_Export;
         GtkWidget *button_Migration;
         GtkWidget *groupExport = gtk_box_new(FALSE, 1);
         
         window_Main = gtk_application_window_new(ForCreateMainWindow->app);
+        Information_Scroll_Box = gtk_scrolled_window_new(NULL, NULL);
         
         gtk_widget_destroy(ForCreateMainWindow->oldWindow);
         gtk_window_set_title (GTK_WINDOW (window_Main), "gestion de la BDD");//Nom de la fenetre
-        gtk_window_set_default_size (GTK_WINDOW (window_Main), 800, 600);
+        gtk_window_set_default_size (GTK_WINDOW (window_Main), 1000, 600);
         gtk_window_set_resizable(GTK_WINDOW(window_Main), FALSE);
+        
         grid = gtk_grid_new ();
-        gtk_container_add (GTK_CONTAINER (window_Main), grid);
+        grid2 = gtk_grid_new ();
+        gtk_container_add (GTK_CONTAINER (window_Main), grid2);
+        gtk_grid_attach(GTK_GRID(grid2), grid, 0, 1, 700, 500);
+        gtk_container_add (GTK_CONTAINER (grid), Information_Scroll_Box);
 
         
-        mainPageLabel = gtk_label_new("Liste des tables et des colonnes de la base sélectionnée");
-
+        mainPageLabel = gtk_label_new("Liste des tables et des colonnes de la base");
+//        gtk_label_set_width_chars(GTK_LABEL(mainPageLabel), 50); //aucun impacte
+        gtk_grid_attach(GTK_GRID(grid2), mainPageLabel, 1, 1, 1, 100);
 
         GtkWidget *groupDatasJSON[n_Col_tab];
         //widget du retour JSON
@@ -110,16 +118,16 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
         Widgets.array_Schema = malloc(sizeof(GtkWidget *) *n_Col_tab);
         *Widgets.array_NameBis = malloc(sizeof(char) *n_Col_tab);
         
-        struct JSONReceiver *Data/*[n_Col_tab]*/;//Structure stockant toutes les données du JSON ----- À retirer ?
-        Data = malloc(sizeof(struct JSONReceiver)*n_Col_tab);
+
         
         struct ExportData *Export;
         Export = malloc(sizeof(struct ExportData));
 //        Export.JSONDatas = Data;
-        
-//        GtkWidget *Array_bdd[n_Col_tab/5]; //pas optimale
+        struct MigrationData *Migration;
+        Migration = malloc(sizeof(struct MigrationData));
+
+        //        GtkWidget *Array_bdd[n_Col_tab/5]; //pas optimale
         Widgets.nbr_Array = -1;
-//        Widgets.nbr_Column = -1;
         
         struct Recup_Widgets *Recup_Widgets;
         Recup_Widgets = malloc(sizeof(struct Recup_Widgets)*n_Col_tab);
@@ -135,8 +143,6 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
             groupDatasJSON[i] = gtk_box_new(FALSE, 80);
             char check_Name_Base[50];
             char check_Name_Table[50];
-            uint16_t cnbs = 0;
-            uint16_t cnts = 0;
             arrayBase_buffer = json_object_array_get_idx(arraysBase, i);
 //            printf("%lu. %s\n", i+1,json_object_get_string(arrayBase_buffer));
             json_object_object_get_ex(arrayBase_buffer, "TABLE_NAME", &Table_Name);
@@ -153,40 +159,19 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
             Widgets.column_Type[i] = gtk_label_new(json_object_get_string(Column_Type));
             gtk_label_set_xalign(GTK_LABEL(Widgets.column_Type[i]), 0.0);
             Widgets.column_Key[i] = gtk_label_new(json_object_get_string(Column_Key));
-
-            //Le stockage des datas par rapport aux widgets
-            strcpy(Data[i].table_Schema, json_object_get_string(Table_Schema));
-            strcpy(Data[i].table_Name, json_object_get_string(Table_Name));
-            strcpy(Data[i].column_Name, json_object_get_string(Column_Name));
-            strcpy(Data[i].column_Type, json_object_get_string(Column_Type));
-            strcpy(Data[i].column_Key, json_object_get_string(Column_Key));
             
-            
-            
-//            printf("%lu",idGsignal);
             
             ++j; //Pour ne pas démarrer à 0
             if(strcmp(check_Name_Base, json_object_get_string(Table_Schema))){
                 strcpy(check_Name_Base, json_object_get_string(Table_Schema));
                 gtk_grid_attach (GTK_GRID (grid), Widgets.array_Schema[i], 0, j++, 1, 2);
-                cnbs = i;
-                Data[i].i = (int)i;
-                Data[i].cnb = 0;
 //                g_signal_connect (array_Schema[i], "clicked", G_CALLBACK(save_schema_selection) , &Data[i]);
             }
-            Data[cnbs].cnb++;// Permet de savoir le nombre de fois que l'on doit boucler pour la copie
             
-
-            
-
-            
-            
-            if(strcmp(check_Name_Table, json_object_get_string(Table_Name)) != 0){
+       
+            if(strcmp(check_Name_Table, json_object_get_string(Table_Name))){
                 strcpy(check_Name_Table, json_object_get_string(Table_Name));
                 gtk_grid_attach (GTK_GRID (grid), Widgets.array_Name[i], 1, j, 2, 1);
-                cnts = i;
-                Data[i].i = (int)i;
-                Data[i].cnt = 0;
                 Widgets.nbr_Array++;
                 
                 
@@ -215,22 +200,13 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
             Recup_Widgets[Widgets.nbr_Array].idGsignala[h++] = g_signal_connect_swapped (Widgets.column_Name[i], "clicked", G_CALLBACK(unselect_array_names), &Recup_Widgets[Widgets.nbr_Array]);
 //            Recup_Widgets[Widgets.nbr_Array].idGsignala = temp;
             g_signal_connect_swapped (Widgets.column_Name[i], "clicked", G_CALLBACK(reactivate_array) , &Recup_Widgets[Widgets.nbr_Array]);
-            
-            
-            
-            
-            
-            Data[cnts].cnt++;// Permet de savoir le nombre de fois que l'on doit boucler pour la copie
+
             
             gtk_box_pack_start(GTK_BOX(groupDatasJSON[i]), Widgets.column_Name[i], FALSE, TRUE, 0);
             gtk_box_pack_start(GTK_BOX(groupDatasJSON[i]), Widgets.column_Type[i], FALSE, TRUE, 0);
             gtk_box_pack_start(GTK_BOX(groupDatasJSON[i]), Widgets.column_Key[i], FALSE, TRUE, 0);
             gtk_box_set_homogeneous(GTK_BOX(groupDatasJSON[i]), TRUE);
             gtk_container_add(GTK_CONTAINER(Recup_Widgets[Widgets.nbr_Array].Array_bdd), groupDatasJSON[i]);
-
-            
-            
-            
 
         };       
 //        printf("%p",&Data[0]);
@@ -245,14 +221,14 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
         Box_For_Button_Deco = gtk_button_box_new (GTK_ORIENTATION_HORIZONTAL);
         gtk_box_pack_start(GTK_BOX(Box_For_Button_Deco),Button_For_Deco, TRUE, TRUE, 0);
 //        gtk_container_add(GTK_CONTAINER(box_Main),Box_For_Button_Deco);
-        gtk_grid_attach (GTK_GRID (grid), Box_For_Button_Deco, 0, j, 1, 1);
+//        gtk_grid_attach (GTK_GRID (grid2), Box_For_Button_Deco, 0, j, 1, 1);
         
         
         //information pour l'export
         //bouton export
         Export->target_Type = gtk_combo_box_text_new();
         button_Export = gtk_button_new_with_label("Exporter la sélection");
-//        printf("\n%d",Recup_Widgets->number_array);
+        Export->label_Status = gtk_label_new("");
         Widgets.nbr_Column = i;
         g_signal_connect_swapped (button_Export, "clicked", G_CALLBACK (data_export), &Widgets); //ne passe pas la structure...
         gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(Export->target_Type), "0", "mld");//0/1/2 car le switch attend du int
@@ -269,14 +245,33 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
         gtk_box_pack_start(GTK_BOX(groupExport), button_Export, TRUE, TRUE, 0);
         gtk_box_pack_start(GTK_BOX(groupExport), Export->target_Folder, TRUE, TRUE, 0);
         gtk_box_pack_start(GTK_BOX(groupExport), Export->target_Type, TRUE, TRUE, 0);
-        gtk_grid_attach(GTK_GRID (grid), groupExport, 0, 300, 50, 50);
+//        gtk_box_pack_start(GTK_BOX(groupExport), Export->label_Status, TRUE, TRUE, 5);
+        
+        gtk_grid_attach(GTK_GRID (grid2), groupExport, 900, 400, 1, 1);
+        gtk_grid_attach (GTK_GRID (grid2), Export->label_Status, 900, 410, 1, 1);
+        gtk_grid_attach (GTK_GRID (grid2), Box_For_Button_Deco, 900, 430, 1, 1);
         
         Widgets.Export_Info = Export;
+        Widgets.Migration_Info = Migration;
         
-        //bouton migration
-//        button_Migration = gtk_button_new_with_label("Exporter la sélection");
-//        g_signal_connect (button_Migration, "clicked", G_CALLBACK (datas_Migration_base), &Widgets);
-//        gtk_box_pack_start(GTK_BOX(groupExport), button_Migration, TRUE, TRUE, 0);
+        //Migration
+        button_Migration = gtk_button_new_with_label("Migrer");
+        g_signal_connect (button_Migration, "clicked", G_CALLBACK (data_export), &Widgets);//Changer la fonction
+        
+        Migration->label_Migration_Status = gtk_label_new("");
+        Migration->Target_Serv = gtk_combo_box_text_new();
+        
+        for(i = 0; i < ForCreateMainWindow->Servers_and_bdds->nbr_server; i++){
+            for(h = 0; h < ForCreateMainWindow->Servers_and_bdds->nbr_bdd; h++){
+                gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(Migration->Target_Serv), "0",gtk_button_get_label( GTK_BUTTON(ForCreateMainWindow->Servers_and_bdds[i].Conf_Name_bdd[h])));
+            }
+        }
+
+        gtk_grid_attach (GTK_GRID (grid2), button_Migration, 900, 350, 1, 1);
+        gtk_grid_attach (GTK_GRID (grid2), Migration->Target_Serv, 930, 350, 1, 1);
+        gtk_grid_attach (GTK_GRID (grid2), Migration->label_Migration_Status, 960, 350, 1, 1);
+        
+        
         
         gtk_widget_show_all (window_Main);
     }

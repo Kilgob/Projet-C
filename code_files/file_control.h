@@ -15,22 +15,27 @@
 #include <json-c/json.h>
 #include <stdint.h>
 
-struct JSONReceiver{ //encore (à) utilisée ?
-    char table_Schema[50];
-    char table_Name[50];
-    char column_Name[50];
-    char column_Type[50];
-    char column_Key[50];
-    uint16_t i;
-    uint16_t j;
-    uint16_t cnb;
-    uint16_t cnt;
-};
+//struct JSONReceiver{ //encore (à) utilisée ?
+//    char table_Schema[50];
+//    char table_Name[50];
+//    char column_Name[50];
+//    char column_Type[50];
+//    char column_Key[50];
+//    uint16_t i;
+//    uint16_t j;
+//    uint16_t cnb;
+//    uint16_t cnt;
+//};
 
 struct ExportData{ //encore (à) utilisée ?
     GtkWidget *target_Folder;
     GtkWidget *target_Type;
-    
+    GtkWidget *label_Status;
+};
+
+struct MigrationData{
+    GtkWidget *label_Migration_Status;
+    GtkWidget *Target_Serv;
 };
 
 struct Recup_Widgets{
@@ -51,6 +56,7 @@ struct WidgetBDD{
     int nbr_Array; //encore utilisée ?
     int nbr_Column;
     struct ExportData *Export_Info;
+    struct MigrationData *Migration_Info;
 };
 
 struct desactivate{
