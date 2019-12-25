@@ -58,8 +58,10 @@ void get_Arrays_Base(json_object **array, struct json_conf *Json_conf){
     strcat(url, json_object_get_string(Json_conf->IP));
     strcat(url, ":");
     strcat(url, json_object_get_string(Json_conf->bdd->PMYSQL));
-    strcat(url, "/mysql1?get_count=true&db=");
+    strcat(url, json_object_get_string(Json_conf->bdd->api_route));
+    strcat(url, "?get_count=true&db=");
     strcat(url, json_object_get_string(Json_conf->bdd->name_BDD));
+    //    strcpy(AddURL,"http://54.37.153.32:5001/mysql1/mysql1?get_count=true&db=db");//V3
 //    strcpy(AddURL,"http://54.37.153.32:5010/mysql1?get_count=true&db=db");//V2
 //    strcpy(AddURL,"http://54.37.153.32:7999/migrator/tables?schema=mainCBase");//V1
     strcpy(AddURL,url);

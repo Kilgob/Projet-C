@@ -158,6 +158,7 @@ static void activate (GtkApplication *app,gpointer user_data){
 
     struct Struct_Conf_Name_Server *Struct_Conf_Name_Server;
     Struct_Conf_Name_Server = malloc(sizeof(struct Struct_Conf_Name_Server) *2)/*[n_Col_tab2]*/;
+    json_conf->nbr_server = n_Col_tab2;
     Struct_Conf_Name_Server->nbr_server = n_Col_tab2;
     
     int g = 1;
@@ -179,6 +180,7 @@ static void activate (GtkApplication *app,gpointer user_data){
         g_signal_connect_swapped (Struct_Conf_Name_Server[k].Conf_Name_Server, "clicked", G_CALLBACK(set_bdd) , &Struct_Conf_Name_Server[k]);
 //            gtk_widget_set_size_request(Struct_Conf_Name_Server[k].Conf_Name_Server, 10, 0);
         
+        json_conf[k].nbr_bdd = n_Col_tab3;
         Struct_Conf_Name_Server[k].nbr_bdd = n_Col_tab3;
         Struct_Conf_Name_Server[k].widgConfb = widgConfb;
         Struct_Conf_Name_Server[k].Boxbdd = BoxBDD;
@@ -194,6 +196,7 @@ static void activate (GtkApplication *app,gpointer user_data){
             }
             
             parsed_Json_Conf_BDD_Buffer_idx = json_object_array_get_idx(parsed_Json_Conf_BDD_Buffer, j);
+            json_object_object_get_ex(parsed_Json_Conf_BDD_Buffer_idx, "api_route", &json_conf[k].bdd[j].api_route);
             json_object_object_get_ex(parsed_Json_Conf_BDD_Buffer_idx, "name_bdd", &json_conf[k].bdd[j].name_BDD);
             json_object_object_get_ex(parsed_Json_Conf_BDD_Buffer_idx, "port_mysql", &json_conf[k].bdd[j].PMYSQL);
             json_object_object_get_ex(parsed_Json_Conf_BDD_Buffer_idx, "port_local", &json_conf[k].bdd[j].PLMYSQL);
@@ -209,7 +212,7 @@ static void activate (GtkApplication *app,gpointer user_data){
         }
     }
     
-    Create_main_window1.Servers_and_bdds = Struct_Conf_Name_Server;
+    Create_main_window1.Servers_and_bdds = json_conf;
     
     Create_main_window1.returnStatusConnexion = 1;
     gtk_box_pack_start(GTK_BOX(boxConnection),Button_Connection.connection_button_box, TRUE, TRUE, 0);

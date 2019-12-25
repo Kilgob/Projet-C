@@ -21,16 +21,17 @@ struct Button_Connection{
 struct Struct_Conf_Name_Server{
     GtkWidget *Conf_Name_Server; //widget du fichier de conf
 //    struct Struct_Conf_Name_bdd *Conf_Name_bdd;
-    size_t nbr_bdd;
-    size_t nbr_server;
     GtkWidget *widgConfb;
     GtkWidget **Conf_Name_bdd;
     GtkWidget *Boxbdd;
     GtkWidget *boxJSON_Conf;
+    size_t nbr_bdd;
+    size_t nbr_server;
 };
 
 
 struct Json_Conf_BDD{
+    struct json_object *api_route;
     struct json_object *name_BDD;
     struct json_object *PMYSQL;
     struct json_object *PLMYSQL;
@@ -44,6 +45,8 @@ struct json_conf{
     struct json_object *user_webService;
     struct json_object *pass_webService;
     struct Json_Conf_BDD *bdd;
+    size_t nbr_bdd;
+    size_t nbr_server;
 
 };
 
@@ -60,7 +63,7 @@ struct create_main_window{
     struct InputLogin *Login;
     int returnStatusConnexion;
     struct json_conf *Json_conf;
-    struct Struct_Conf_Name_Server *Servers_and_bdds;
+    struct json_conf *Servers_and_bdds;
 };
 
 #ifndef connectionBDD_h

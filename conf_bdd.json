@@ -6,15 +6,17 @@
     "pass_webService" : "pass",
     "BDD":[
       {
+        "api_route":"/mysql1/mysql1",
         "name_bdd":"db",
-        "port_mysql":"5010",
+        "port_mysql":"5001",
         "port_local":"3306",
         "mdp_root":"Fr3dCl3m",
         "bdd_type":"mysql"
       },
       {
+        "api_route":"/mysql2/mysql2",
         "name_bdd":"db",
-        "port_mysql":"5011",
+        "port_mysql":"5002",
         "port_local":"3306",
         "mdp_root":"Fr3dCl3m",
         "bdd_type":"mysql"
@@ -28,6 +30,7 @@
     "pass_webService" : "pass",
     "BDD":[
       {
+        "api_route":"/mysql1/mysql1",
         "name_bdd":"bdd 2",
         "port_mysql":"5010",
         "port_local":"3306",
@@ -35,6 +38,7 @@
         "bdd_type":"mysql"
       },
       {
+        "api_route":"/mysql1/mysql1",
         "name_bdd":"bdd 3",
         "port_mysql":"5011",
         "port_local":"3306",

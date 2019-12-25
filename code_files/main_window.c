@@ -220,8 +220,32 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
         //Création de la box du bouton déconnexion, ajout du bouton dans sa box et ajout dans la box main
         Box_For_Button_Deco = gtk_button_box_new (GTK_ORIENTATION_HORIZONTAL);
         gtk_box_pack_start(GTK_BOX(Box_For_Button_Deco),Button_For_Deco, TRUE, TRUE, 0);
-//        gtk_container_add(GTK_CONTAINER(box_Main),Box_For_Button_Deco);
-//        gtk_grid_attach (GTK_GRID (grid2), Box_For_Button_Deco, 0, j, 1, 1);
+
+        
+        
+        //Migration
+        button_Migration = gtk_button_new_with_label("Migrer");
+        g_signal_connect (button_Migration, "clicked", G_CALLBACK (data_export), &Widgets);//Changer la fonction
+        
+        Migration->label_Migration_Status = gtk_label_new("");
+        Migration->Target_Serv = gtk_combo_box_text_new();
+        
+        j = 0;//pour le switch suivant (gtk_combo_box)
+        char temp[2];//peut devenir une fonction
+        for(i = 0; i < ForCreateMainWindow->Servers_and_bdds->nbr_server; i++){
+            for(h = 0; h < ForCreateMainWindow->Servers_and_bdds->nbr_bdd; h++){
+                sprintf(temp, "%d",j++); //convetir int en char pour la fonciton suivante
+                gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(Migration->Target_Serv), temp,json_object_get_string(ForCreateMainWindow->Servers_and_bdds[i].bdd[h].name_BDD));
+//                printf("bdd name : %s\n",gtk_button_get_label( GTK_BUTTON(ForCreateMainWindow->Servers_and_bdds[i].Conf_Name_bdd[h])));
+//                printf("bdd name %s : %s\n",temp,json_object_get_string(ForCreateMainWindow->Servers_and_bdds[i].bdd[h].name_BDD));
+            }
+        }
+
+        gtk_grid_attach (GTK_GRID (grid2), button_Migration, 900, 350, 1, 1);
+        gtk_grid_attach (GTK_GRID (grid2), Migration->Target_Serv, 930, 350, 1, 1);
+        gtk_grid_attach (GTK_GRID (grid2), Migration->label_Migration_Status, 960, 350, 1, 1);
+        
+        
         
         
         //information pour l'export
@@ -231,21 +255,22 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
         Export->label_Status = gtk_label_new("");
         Widgets.nbr_Column = i;
         g_signal_connect_swapped (button_Export, "clicked", G_CALLBACK (data_export), &Widgets); //ne passe pas la structure...
-        gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(Export->target_Type), "0", "mld");//0/1/2 car le switch attend du int
+        gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(Export->target_Type), "0", "sql");//0/1/2 car le switch attend du int
         gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(Export->target_Type), "1", "csv");
         gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(Export->target_Type), "2", "json");
         gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(Export->target_Type), "3", "xml");
 
         //Chemin d'export
         Export->target_Folder = gtk_entry_new();
-        gtk_entry_set_placeholder_text(GTK_ENTRY(Export->target_Folder), "Chemain absolu du répertoire");
-        gtk_entry_set_text(GTK_ENTRY(Export->target_Folder), "/Users/fred/OneDrive/ESGI/Annee2/ProjetC/Files");
+        gtk_entry_set_placeholder_text(GTK_ENTRY(Export->target_Folder), "Chemin absolu du répertoire avec le nom du fichier sans extension");
+        gtk_entry_set_text(GTK_ENTRY(Export->target_Folder), "/Users/fred/OneDrive/ESGI/Annee2/ProjetC/Files/export");
         
         //box_pack des widgets pour l'export
         gtk_box_pack_start(GTK_BOX(groupExport), button_Export, TRUE, TRUE, 0);
         gtk_box_pack_start(GTK_BOX(groupExport), Export->target_Folder, TRUE, TRUE, 0);
         gtk_box_pack_start(GTK_BOX(groupExport), Export->target_Type, TRUE, TRUE, 0);
 //        gtk_box_pack_start(GTK_BOX(groupExport), Export->label_Status, TRUE, TRUE, 5);
+        gtk_widget_set_size_request(Export->target_Folder, 400, 5);
         
         gtk_grid_attach(GTK_GRID (grid2), groupExport, 900, 400, 1, 1);
         gtk_grid_attach (GTK_GRID (grid2), Export->label_Status, 900, 410, 1, 1);
@@ -253,24 +278,6 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
         
         Widgets.Export_Info = Export;
         Widgets.Migration_Info = Migration;
-        
-        //Migration
-        button_Migration = gtk_button_new_with_label("Migrer");
-        g_signal_connect (button_Migration, "clicked", G_CALLBACK (data_export), &Widgets);//Changer la fonction
-        
-        Migration->label_Migration_Status = gtk_label_new("");
-        Migration->Target_Serv = gtk_combo_box_text_new();
-        
-        for(i = 0; i < ForCreateMainWindow->Servers_and_bdds->nbr_server; i++){
-            for(h = 0; h < ForCreateMainWindow->Servers_and_bdds->nbr_bdd; h++){
-                gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(Migration->Target_Serv), "0",gtk_button_get_label( GTK_BUTTON(ForCreateMainWindow->Servers_and_bdds[i].Conf_Name_bdd[h])));
-            }
-        }
-
-        gtk_grid_attach (GTK_GRID (grid2), button_Migration, 900, 350, 1, 1);
-        gtk_grid_attach (GTK_GRID (grid2), Migration->Target_Serv, 930, 350, 1, 1);
-        gtk_grid_attach (GTK_GRID (grid2), Migration->label_Migration_Status, 960, 350, 1, 1);
-        
         
         
         gtk_widget_show_all (window_Main);

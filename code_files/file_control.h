@@ -68,7 +68,7 @@ int check_file_conf(void);
 void save_table_selection(struct Recup_Widgets *Data);
 void data_export(struct WidgetBDD *Datas);
 
-int export_MLD(struct WidgetBDD *Data, FILE *fileSave);
+int export_SQL(struct WidgetBDD *Data, FILE *fileSave);
 int export_CSV(struct WidgetBDD *Data, FILE *fileSave);
 int export_JSON(struct WidgetBDD *Data, FILE *fileSave);
 int export_XML(struct WidgetBDD *Data, FILE *fileSave);
