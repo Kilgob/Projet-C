@@ -33,11 +33,6 @@ struct ExportData{ //encore (à) utilisée ?
     GtkWidget *label_Status;
 };
 
-struct MigrationData{
-    GtkWidget *label_Migration_Status;
-    GtkWidget *Target_Serv;
-};
-
 struct Recup_Widgets{
     GtkWidget *array_Name;
     GtkWidget *Array_bdd;
@@ -52,7 +47,7 @@ struct WidgetBDD{
     GtkWidget **array_Schema;
     GtkWidget **column_Name;
     GtkWidget **column_Key;
-    char *array_NameBis[50];//le widget est stocké ailleurs donc meilleur facon de le récupérer
+    char *array_NameBis[50];//encore utilisée ?
     int nbr_Array; //encore utilisée ?
     int nbr_Column;
     struct ExportData *Export_Info;
@@ -70,7 +65,7 @@ void data_export(struct WidgetBDD *Datas);
 
 int export_SQL(struct WidgetBDD *Data, FILE *fileSave);
 int export_CSV(struct WidgetBDD *Data, FILE *fileSave);
-int export_JSON(struct WidgetBDD *Data, FILE *fileSave);
+int export_JSON(struct WidgetBDD *Data, FILE *fileSave, int task, struct json_object *file_Migration);
 int export_XML(struct WidgetBDD *Data, FILE *fileSave);
 //void datas_Migration_base(struct ExportData *Datas){
 #endif /* file_control_h */

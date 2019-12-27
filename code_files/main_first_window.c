@@ -170,6 +170,8 @@ static void activate (GtkApplication *app,gpointer user_data){
         json_object_object_get_ex(parsed_Json_Conf_Server_Buffer, "name_server", &json_conf[k].name_server);
         json_object_object_get_ex(parsed_Json_Conf_Server_Buffer, "user_webService", &json_conf[k].user_webService);
         json_object_object_get_ex(parsed_Json_Conf_Server_Buffer, "pass_webService", &json_conf[k].pass_webService);
+        json_object_object_get_ex(parsed_Json_Conf_Server_Buffer, "pjson", &json_conf[k].PJSON);
+        json_object_object_get_ex(parsed_Json_Conf_Server_Buffer, "pjson_pass_api", &json_conf[k].PJSon_Pass_API);
         json_object_object_get_ex(parsed_Json_Conf_Server_Buffer, "BDD", &parsed_Json_Conf_BDD_Buffer);
         n_Col_tab3 = json_object_array_length(parsed_Json_Conf_BDD_Buffer);
         
@@ -197,11 +199,13 @@ static void activate (GtkApplication *app,gpointer user_data){
             
             parsed_Json_Conf_BDD_Buffer_idx = json_object_array_get_idx(parsed_Json_Conf_BDD_Buffer, j);
             json_object_object_get_ex(parsed_Json_Conf_BDD_Buffer_idx, "api_route", &json_conf[k].bdd[j].api_route);
-            json_object_object_get_ex(parsed_Json_Conf_BDD_Buffer_idx, "name_bdd", &json_conf[k].bdd[j].name_BDD);
-            json_object_object_get_ex(parsed_Json_Conf_BDD_Buffer_idx, "port_mysql", &json_conf[k].bdd[j].PMYSQL);
-            json_object_object_get_ex(parsed_Json_Conf_BDD_Buffer_idx, "port_local", &json_conf[k].bdd[j].PLMYSQL);
-            json_object_object_get_ex(parsed_Json_Conf_BDD_Buffer_idx, "mdp_root", &json_conf[k].bdd[j].Pass_Root);
+            json_object_object_get_ex(parsed_Json_Conf_BDD_Buffer_idx, "schema", &json_conf[k].bdd[j].name_BDD);
+            json_object_object_get_ex(parsed_Json_Conf_BDD_Buffer_idx, "port_api", &json_conf[k].bdd[j].PAPI);
+            json_object_object_get_ex(parsed_Json_Conf_BDD_Buffer_idx, "port_mysql", &json_conf[k].bdd[j].PMYSQ);
+            json_object_object_get_ex(parsed_Json_Conf_BDD_Buffer_idx, "pass_root", &json_conf[k].bdd[j].Pass_Root);
             json_object_object_get_ex(parsed_Json_Conf_BDD_Buffer_idx, "bdd_type", &json_conf[k].bdd[j].BDD_Type);
+            json_object_object_get_ex(parsed_Json_Conf_BDD_Buffer_idx, "user_mysql", &json_conf[k].bdd[j].user);
+            json_object_object_get_ex(parsed_Json_Conf_BDD_Buffer_idx, "pass_mysql", &json_conf[k].bdd[j].pass_User);
             
             Struct_Conf_Name_Server[k].Conf_Name_bdd[j] = gtk_button_new_with_label(json_object_get_string(json_conf[k].bdd[j].name_BDD));
             g_signal_connect_swapped (Struct_Conf_Name_Server[k].Conf_Name_bdd[j], "clicked", G_CALLBACK(button_set_color) , &Struct_Conf_Name_Server[k].Conf_Name_bdd[j]);
@@ -212,7 +216,7 @@ static void activate (GtkApplication *app,gpointer user_data){
         }
     }
     
-    Create_main_window1.Servers_and_bdds = json_conf;
+//    Create_main_window1.Json_conf = json_conf;
     
     Create_main_window1.returnStatusConnexion = 1;
     gtk_box_pack_start(GTK_BOX(boxConnection),Button_Connection.connection_button_box, TRUE, TRUE, 0);

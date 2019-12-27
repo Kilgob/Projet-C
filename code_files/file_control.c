@@ -80,7 +80,7 @@ void data_export(struct WidgetBDD *Datas){
                     status = export_CSV(Datas, fileSave);
                 break;
                 case 2:
-                    status = export_JSON(Datas, fileSave);
+                    status = export_JSON(Datas, fileSave, 0, NULL);
                 break;
                 case 3:
                     status = export_XML(Datas, fileSave);
@@ -110,6 +110,7 @@ void data_export(struct WidgetBDD *Datas){
 
 int export_SQL(struct WidgetBDD *Datas, FILE *fileSave){
     int i = 0,j;
+    int check_complete_array = 1;
     char check_array[50];
 //    char check_Pri[50];
         for(i = 0; i < Datas->nbr_Column; i++){
@@ -124,9 +125,8 @@ int export_SQL(struct WidgetBDD *Datas, FILE *fileSave){
                             fprintf(fileSave,",\n");
                     }
 //                    i++;
-                }/*while( i != Datas->nbr_Column-1 && !strcmp(check_array, gtk_button_get_label(GTK_BUTTON(Datas->array_Name[i+1]))));*/
-                i = j-1;
-//                strcpy(check_array, gtk_button_get_label(GTK_BUTTON(Datas->array_Name[i])));
+                }
+                i = j-1;//car j dépasse de 1 le nombre de colonnes sinon
                 fprintf(fileSave, ");\n");
             }
         }
@@ -144,28 +144,52 @@ int export_CSV(struct WidgetBDD *Datas, FILE *fileSave){
     }
     return 0;
 }
-int export_JSON(struct WidgetBDD *Datas, FILE *fileSave){
-    int i;
-    struct json_object *JsonBuffer;
-    struct json_object *JsonArray;
-    struct json_object *JsonColumn;
-    JsonBuffer = json_object_new_object();
-   
-    JsonColumn = json_object_new_object();;
-    
-    JsonBuffer = json_object_new_array();
-    
-    for(i = 0; i < Datas->nbr_Column; i++){
-        JsonArray = json_object_new_object();
-        if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(Datas->column_Name[i]))){
-            json_object_object_add(JsonArray, "array name", json_object_new_string(gtk_button_get_label(GTK_BUTTON(Datas->array_Name[i])))) ;
-            json_object_object_add(JsonArray, "column name", json_object_new_string(gtk_button_get_label(GTK_BUTTON(Datas->column_Name[i]))));
-            json_object_object_add(JsonArray, "column type", json_object_new_string(gtk_label_get_text(GTK_LABEL(Datas->column_Type[i]))));
-            json_object_object_add(JsonArray, "column key", json_object_new_string(gtk_label_get_text(GTK_LABEL(Datas->column_Key[i]))));
-            json_object_array_add(JsonBuffer, JsonArray);
+int export_JSON(struct WidgetBDD *Datas, FILE *fileSave, int task, struct json_object *file_Migration){ //task = 0/1 export ou migration
+        int i = 0,j,h =0;
+        int check_complete_array = 1;
+        char check_array[50];
+        
+         struct json_object *Json;
+         struct json_object *JsonArray;
+         struct json_object *JsonColumn;
+        struct json_object *JsonColumnIN;
+         Json = json_object_new_array();
+        
+        for(i = 0; i < Datas->nbr_Column; i++){
+            check_complete_array = 1;
+            JsonArray = json_object_new_object();
+            JsonColumn = json_object_new_array();
+
+            h = 0;
+            if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(Datas->column_Name[i]))){
+                json_object_object_add(JsonArray, "array", json_object_new_string(gtk_button_get_label(GTK_BUTTON(Datas->array_Name[i]))));
+                strcpy(check_array, gtk_button_get_label(GTK_BUTTON(Datas->array_Name[i])));
+                for(j = i ; j < Datas->nbr_Column && !strcmp(check_array, gtk_button_get_label(GTK_BUTTON(Datas->array_Name[j]))) ;j++){
+                    if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(Datas->column_Name[j]))){
+                        JsonColumnIN = json_object_new_object();
+                        json_object_object_add(JsonColumnIN, "column name", json_object_new_string(gtk_button_get_label(GTK_BUTTON(Datas->column_Name[j]))));
+                        json_object_object_add(JsonColumnIN, "column type", json_object_new_string(gtk_label_get_text(GTK_LABEL(Datas->column_Type[j]))));
+                        json_object_object_add(JsonColumnIN, "column key", json_object_new_string(gtk_label_get_text(GTK_LABEL(Datas->column_Key[j]))));
+
+                        json_object_array_add(JsonColumn, JsonColumnIN);
+                        h++;
+                    }
+                    else
+                        check_complete_array = 0;
+                    
+                }
+                json_object_object_add(JsonArray, "all_column", json_object_new_int(check_complete_array));
+                json_object_object_add(JsonArray, "columns", JsonColumn);
+                i = j-1;//car j dépasse de 1 le nombre de colonnes sinon
+                json_object_array_add(Json, JsonArray);
+            }
+            
         }
-    }
-    fprintf(fileSave,"%s",json_object_get_string(JsonBuffer));
+    if(task == 0)
+        fprintf(fileSave,"%s",json_object_get_string(Json));
+    else
+        json_object_object_add(file_Migration, "request_export", Json);
+        
     return 0;
 }
 int export_XML(struct WidgetBDD *Datas, FILE *fileSave){

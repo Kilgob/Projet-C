@@ -108,6 +108,9 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
         gtk_grid_attach(GTK_GRID(grid2), mainPageLabel, 1, 1, 1, 100);
 
         GtkWidget *groupDatasJSON[n_Col_tab];
+        
+        struct Migration *Migration_Datas = malloc(sizeof(struct Migration));
+        
         //widget du retour JSON
         static struct WidgetBDD Widgets;
         
@@ -124,7 +127,7 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
         Export = malloc(sizeof(struct ExportData));
 //        Export.JSONDatas = Data;
         struct MigrationData *Migration;
-        Migration = malloc(sizeof(struct MigrationData));
+        Migration = malloc(sizeof(struct Migration));
 
         //        GtkWidget *Array_bdd[n_Col_tab/5]; //pas optimale
         Widgets.nbr_Array = -1;
@@ -222,28 +225,31 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
         gtk_box_pack_start(GTK_BOX(Box_For_Button_Deco),Button_For_Deco, TRUE, TRUE, 0);
 
         
-        
+        Migration_Datas->Widgets = &Widgets;
+        Migration_Datas->Json_conf = ForCreateMainWindow->Json_conf;
         //Migration
         button_Migration = gtk_button_new_with_label("Migrer");
-        g_signal_connect (button_Migration, "clicked", G_CALLBACK (data_export), &Widgets);//Changer la fonction
+        g_signal_connect_swapped (button_Migration, "clicked", G_CALLBACK (migration), Migration_Datas);
         
-        Migration->label_Migration_Status = gtk_label_new("");
-        Migration->Target_Serv = gtk_combo_box_text_new();
+        Migration_Datas->label_Migration_Status = gtk_label_new("");
+        Migration_Datas->Target_Serv = gtk_combo_box_text_new();
+        
+        
+        Widgets.nbr_Column = i;
+        
         
         j = 0;//pour le switch suivant (gtk_combo_box)
         char temp[2];//peut devenir une fonction
-        for(i = 0; i < ForCreateMainWindow->Servers_and_bdds->nbr_server; i++){
-            for(h = 0; h < ForCreateMainWindow->Servers_and_bdds->nbr_bdd; h++){
+        for(i = 0; i < ForCreateMainWindow->Json_conf->nbr_server; i++){
+            for(h = 0; h < ForCreateMainWindow->Json_conf->nbr_bdd; h++){
                 sprintf(temp, "%d",j++); //convetir int en char pour la fonciton suivante
-                gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(Migration->Target_Serv), temp,json_object_get_string(ForCreateMainWindow->Servers_and_bdds[i].bdd[h].name_BDD));
-//                printf("bdd name : %s\n",gtk_button_get_label( GTK_BUTTON(ForCreateMainWindow->Servers_and_bdds[i].Conf_Name_bdd[h])));
-//                printf("bdd name %s : %s\n",temp,json_object_get_string(ForCreateMainWindow->Servers_and_bdds[i].bdd[h].name_BDD));
+                gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(Migration_Datas->Target_Serv), temp,json_object_get_string(ForCreateMainWindow->Json_conf[i].bdd[h].name_BDD));
             }
         }
 
         gtk_grid_attach (GTK_GRID (grid2), button_Migration, 900, 350, 1, 1);
-        gtk_grid_attach (GTK_GRID (grid2), Migration->Target_Serv, 930, 350, 1, 1);
-        gtk_grid_attach (GTK_GRID (grid2), Migration->label_Migration_Status, 960, 350, 1, 1);
+        gtk_grid_attach (GTK_GRID (grid2), Migration_Datas->Target_Serv, 930, 350, 1, 1);
+        gtk_grid_attach (GTK_GRID (grid2), Migration_Datas->label_Migration_Status, 900, 360, 1, 1);
         
         
         
@@ -253,8 +259,8 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
         Export->target_Type = gtk_combo_box_text_new();
         button_Export = gtk_button_new_with_label("Exporter la sélection");
         Export->label_Status = gtk_label_new("");
-        Widgets.nbr_Column = i;
-        g_signal_connect_swapped (button_Export, "clicked", G_CALLBACK (data_export), &Widgets); //ne passe pas la structure...
+
+        g_signal_connect_swapped (button_Export, "clicked", G_CALLBACK (data_export), &Widgets);
         gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(Export->target_Type), "0", "sql");//0/1/2 car le switch attend du int
         gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(Export->target_Type), "1", "csv");
         gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(Export->target_Type), "2", "json");
