@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B65C32A623BD509D00C44DC2 /* base_export.c in Sources */ = {isa = PBXBuildFile; fileRef = B65C32A323BD509D00C44DC2 /* base_export.c */; };
+		B65C32A723BD509D00C44DC2 /* base_import.c in Sources */ = {isa = PBXBuildFile; fileRef = B65C32A523BD509D00C44DC2 /* base_import.c */; };
+		B663DF1023BF56AA00C6357E /* test_connection.c in Sources */ = {isa = PBXBuildFile; fileRef = B663DF0F23BF56AA00C6357E /* test_connection.c */; };
 		B68E3E4823B64B0D00438B9A /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = B68E3E4723B64B0D00438B9A /* main.c */; };
 /* End PBXBuildFile section */
 
@@ -23,6 +26,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		B65C32A323BD509D00C44DC2 /* base_export.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = base_export.c; sourceTree = "<group>"; };
+		B65C32A423BD509D00C44DC2 /* base_export.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = base_export.h; sourceTree = "<group>"; };
+		B65C32A523BD509D00C44DC2 /* base_import.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = base_import.c; sourceTree = "<group>"; };
+		B663DF0E23BF56AA00C6357E /* test_connection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = test_connection.h; sourceTree = "<group>"; };
+		B663DF0F23BF56AA00C6357E /* test_connection.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test_connection.c; sourceTree = "<group>"; };
 		B68E3E4423B64B0D00438B9A /* migrator */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = migrator; sourceTree = BUILT_PRODUCTS_DIR; };
 		B68E3E4723B64B0D00438B9A /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -58,6 +66,11 @@
 			isa = PBXGroup;
 			children = (
 				B68E3E4723B64B0D00438B9A /* main.c */,
+				B65C32A423BD509D00C44DC2 /* base_export.h */,
+				B65C32A323BD509D00C44DC2 /* base_export.c */,
+				B65C32A523BD509D00C44DC2 /* base_import.c */,
+				B663DF0E23BF56AA00C6357E /* test_connection.h */,
+				B663DF0F23BF56AA00C6357E /* test_connection.c */,
 			);
 			path = migrator;
 			sourceTree = "<group>";
@@ -119,6 +132,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B65C32A623BD509D00C44DC2 /* base_export.c in Sources */,
+				B663DF1023BF56AA00C6357E /* test_connection.c in Sources */,
+				B65C32A723BD509D00C44DC2 /* base_import.c in Sources */,
 				B68E3E4823B64B0D00438B9A /* main.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -239,14 +255,38 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				HEADER_SEARCH_PATHS = "/usr/local/Cellar/json-c/0.13.1/include";
-				"HEADER_SEARCH_PATHS[arch=*]" = "/usr/local/Cellar/json-c/0.13.1/include";
-				LIBRARY_SEARCH_PATHS = "/usr/local/Cellar/json-c/0.13.1/lib";
-				"LIBRARY_SEARCH_PATHS[arch=*]" = "/usr/local/Cellar/json-c/0.13.1/lib";
-				OTHER_LDFLAGS = "-ljson-c";
+				HEADER_SEARCH_PATHS = (
+					"/usr/local/Cellar/json-c/0.13.1/include",
+					"/usr/local/mysql-8.0.18-macos10.14-x86_64/mysql-connector-c-6.1.11-macos10.12-x86_64/include",
+				);
+				"HEADER_SEARCH_PATHS[arch=*]" = (
+					"/usr/local/Cellar/json-c/0.13.1/include",
+					"/usr/local/mysql-8.0.18-macos10.14-x86_64/mysql-connector-c-6.1.11-macos10.12-x86_64/include",
+				);
+				LD_DYLIB_INSTALL_NAME = "";
+				LIBRARY_SEARCH_PATHS = (
+					"/usr/local/Cellar/json-c/0.13.1/lib",
+					"/usr/local/mysql-8.0.18-macos10.14-x86_64/mysql-connector-c-6.1.11-macos10.12-x86_64/lib",
+				);
+				"LIBRARY_SEARCH_PATHS[arch=*]" = (
+					"/usr/local/Cellar/json-c/0.13.1/lib",
+					"/usr/local/mysql-8.0.18-macos10.14-x86_64/mysql-connector-c-6.1.11-macos10.12-x86_64/lib",
+				);
+				OTHER_LDFLAGS = (
+					"-ljson-c",
+					"-lmysqlclient",
+				);
+				PRELINK_LIBS = "/Users/fred/Library/Developer/Xcode/DerivedData/bibMigration-cakpwotfnkqikxftdxgcymqtyteg/Build/Intermediates.noindex/bibMigration.build/Debug/bibMigration.build/Objects-normal/x86_64/base_export.o /Users/fred/Library/Developer/Xcode/DerivedData/bibMigration-cakpwotfnkqikxftdxgcymqtyteg/Build/Intermediates.noindex/bibMigration.build/Debug/bibMigration.build/Objects-normal/x86_64/base_import.o";
+				"PRELINK_LIBS[arch=*]" = "/Users/fred/Library/Developer/Xcode/DerivedData/bibMigration-cakpwotfnkqikxftdxgcymqtyteg/Build/Intermediates.noindex/bibMigration.build/Debug/bibMigration.build/Objects-normal/x86_64/base_export.o /Users/fred/Library/Developer/Xcode/DerivedData/bibMigration-cakpwotfnkqikxftdxgcymqtyteg/Build/Intermediates.noindex/bibMigration.build/Debug/bibMigration.build/Objects-normal/x86_64/base_import.o";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				USER_HEADER_SEARCH_PATHS = "/usr/local/Cellar/json-c/0.13.1/include";
-				"USER_HEADER_SEARCH_PATHS[arch=*]" = "/usr/local/Cellar/json-c/0.13.1/include";
+				USER_HEADER_SEARCH_PATHS = (
+					"/usr/local/Cellar/json-c/0.13.1/include",
+					"/usr/local/mysql-8.0.18-macos10.14-x86_64/mysql-connector-c-6.1.11-macos10.12-x86_64/include",
+				);
+				"USER_HEADER_SEARCH_PATHS[arch=*]" = (
+					"/usr/local/Cellar/json-c/0.13.1/include",
+					"/usr/local/mysql-8.0.18-macos10.14-x86_64/mysql-connector-c-6.1.11-macos10.12-x86_64/include",
+				);
 			};
 			name = Debug;
 		};
@@ -254,14 +294,38 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				HEADER_SEARCH_PATHS = "/usr/local/Cellar/json-c/0.13.1/include";
-				"HEADER_SEARCH_PATHS[arch=*]" = "/usr/local/Cellar/json-c/0.13.1/include";
-				LIBRARY_SEARCH_PATHS = "/usr/local/Cellar/json-c/0.13.1/lib";
-				"LIBRARY_SEARCH_PATHS[arch=*]" = "/usr/local/Cellar/json-c/0.13.1/lib";
-				OTHER_LDFLAGS = "-ljson-c";
+				HEADER_SEARCH_PATHS = (
+					"/usr/local/Cellar/json-c/0.13.1/include",
+					"/usr/local/mysql-8.0.18-macos10.14-x86_64/mysql-connector-c-6.1.11-macos10.12-x86_64/include",
+				);
+				"HEADER_SEARCH_PATHS[arch=*]" = (
+					"/usr/local/Cellar/json-c/0.13.1/include",
+					"/usr/local/mysql-8.0.18-macos10.14-x86_64/mysql-connector-c-6.1.11-macos10.12-x86_64/include",
+				);
+				LD_DYLIB_INSTALL_NAME = "";
+				LIBRARY_SEARCH_PATHS = (
+					"/usr/local/Cellar/json-c/0.13.1/lib",
+					"/usr/local/mysql-8.0.18-macos10.14-x86_64/mysql-connector-c-6.1.11-macos10.12-x86_64/lib",
+				);
+				"LIBRARY_SEARCH_PATHS[arch=*]" = (
+					"/usr/local/Cellar/json-c/0.13.1/lib",
+					"/usr/local/mysql-8.0.18-macos10.14-x86_64/mysql-connector-c-6.1.11-macos10.12-x86_64/lib",
+				);
+				OTHER_LDFLAGS = (
+					"-ljson-c",
+					"-lmysqlclient",
+				);
+				PRELINK_LIBS = "/Users/fred/Library/Developer/Xcode/DerivedData/bibMigration-cakpwotfnkqikxftdxgcymqtyteg/Build/Intermediates.noindex/bibMigration.build/Debug/bibMigration.build/Objects-normal/x86_64/base_export.o /Users/fred/Library/Developer/Xcode/DerivedData/bibMigration-cakpwotfnkqikxftdxgcymqtyteg/Build/Intermediates.noindex/bibMigration.build/Debug/bibMigration.build/Objects-normal/x86_64/base_import.o";
+				"PRELINK_LIBS[arch=*]" = "/Users/fred/Library/Developer/Xcode/DerivedData/bibMigration-cakpwotfnkqikxftdxgcymqtyteg/Build/Intermediates.noindex/bibMigration.build/Debug/bibMigration.build/Objects-normal/x86_64/base_export.o /Users/fred/Library/Developer/Xcode/DerivedData/bibMigration-cakpwotfnkqikxftdxgcymqtyteg/Build/Intermediates.noindex/bibMigration.build/Debug/bibMigration.build/Objects-normal/x86_64/base_import.o";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				USER_HEADER_SEARCH_PATHS = "/usr/local/Cellar/json-c/0.13.1/include";
-				"USER_HEADER_SEARCH_PATHS[arch=*]" = "/usr/local/Cellar/json-c/0.13.1/include";
+				USER_HEADER_SEARCH_PATHS = (
+					"/usr/local/Cellar/json-c/0.13.1/include",
+					"/usr/local/mysql-8.0.18-macos10.14-x86_64/mysql-connector-c-6.1.11-macos10.12-x86_64/include",
+				);
+				"USER_HEADER_SEARCH_PATHS[arch=*]" = (
+					"/usr/local/Cellar/json-c/0.13.1/include",
+					"/usr/local/mysql-8.0.18-macos10.14-x86_64/mysql-connector-c-6.1.11-macos10.12-x86_64/include",
+				);
 			};
 			name = Release;
 		};

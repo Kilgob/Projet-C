@@ -16,6 +16,7 @@
 struct Button_Connection{
     GtkWidget *connection_button;
     GtkWidget *connection_button_box;
+    int status;
 };
 
 
@@ -33,7 +34,8 @@ struct Struct_Conf_Name_Server{
 
 struct Json_Conf_BDD{
     struct json_object *api_route;
-    struct json_object *name_BDD;
+    struct json_object *name_BDD;//nom shéma
+    struct json_object *name_db;//nom db (obligatoire pour vertica)
     struct json_object *PMYSQ;
     struct json_object *PAPI;
     struct json_object *Pass_Root;
@@ -50,6 +52,7 @@ struct json_conf{
     struct json_object *PJSON;
     struct json_object *PJSon_Pass_API;
     struct Json_Conf_BDD *bdd;
+    int bdd_select;
     size_t nbr_bdd;
     size_t nbr_server;
 
@@ -66,8 +69,10 @@ struct create_main_window{
     GtkApplication *app;
     GtkWidget *LabelStatusConnection;
     struct InputLogin *Login;
-    int returnStatusConnexion;
+//    int returnStatusConnexion;
     struct json_conf *Json_conf;
+    struct json_conf *Json_conf_foa;//La variable au dessus correspond au bdd/schéma sélectionnée et non pas au premier bdd/schéma du fichier de conf (meilleur facon de récupérer le 1er ?) Encore utilisée ?
+    struct Button_Connection *status_connection;
 //    struct json_conf *Servers_and_bdds;
 };
 
@@ -80,8 +85,8 @@ void connection_bdd(GtkWidget *widget, struct InputLogin *Data);
 
 
 
-#ifndef json_parser_h
-#define json_parser_h
+#ifndef WebService_h
+#define WebService_h
 
 //Structure recevant la sortie de LibCurl
 struct BufferStruct
@@ -93,13 +98,14 @@ struct Migration{
     struct WidgetBDD *Widgets;
     struct json_conf *Json_conf;
     GtkWidget *label_Migration_Status;
-    GtkWidget *Target_Serv;
+    GtkWidget *Target_Schema;
+    struct json_conf *Json_conf_foa; //copie de la variable (c'est là que l'on a besoin de boucler sur toute la listes des bdds/schémas)
 };
 
 void get_Arrays_Base(json_object **array, struct json_conf *Json_conf);
 int requestToBDD(char *, char*);
 void migration(struct Migration *Datas);
-int migration_serv(struct json_conf *Json_conf, json_object *file, char *task, char *name_file);
+int migration_serv(struct Migration *, json_object *file, char *task, char *name_file);
 int migration_datas(struct WidgetBDD *Widgets, json_object *file);
 
 #endif /* connectionBDD_h */

@@ -1,0 +1,36 @@
+{
+  "info1": "test1",
+  "info2": "test2",
+  "test_tab": [
+    "valeur du tableau 1",
+    "valeur du tableau 2",
+    "valeur du tableau 3"
+  ]
+};
+{
+  "info1": "test1",
+  "info2": "la",
+  "test_tab": [
+    "valeur du tableau 1",
+    "valeur du tableau 2",
+    "valeur du tableau 3"
+  ]
+};
+{
+  "info1": "nouveau test",
+  "info2": "la aussi",
+  "test_tab": [
+    "bonjour",
+    "bonsoir",
+    "ici"
+  ]
+};
+{
+  "info1": "le 3e test",
+  "info2": "encore un test",
+  "test_tab": [
+    "valeur1",
+    "valeur 2",
+    "valeur 3"
+  ]
+}

@@ -1,0 +1,5 @@
+DROP TABLE IF EXISTS 'fred1';
+CREATE TABLE 'fred1'(
+'col_date' 'datetime' ,
+'col_decimal' 'decimal(25,3)' ,
+);

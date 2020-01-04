@@ -11,9 +11,18 @@
 #ifndef file_control_h
 #define file_control_h
 
+struct content{
+    char name[50];
+    char content[50];
+    char nameAttribute[50];
+    char attribute[50];
+};
+
 #include <gtk/gtk.h>
 #include <json-c/json.h>
 #include <stdint.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
 
 //struct JSONReceiver{ //encore (à) utilisée ?
 //    char table_Schema[50];
@@ -67,5 +76,8 @@ int export_SQL(struct WidgetBDD *Data, FILE *fileSave);
 int export_CSV(struct WidgetBDD *Data, FILE *fileSave);
 int export_JSON(struct WidgetBDD *Data, FILE *fileSave, int task, struct json_object *file_Migration);
 int export_XML(struct WidgetBDD *Data, FILE *fileSave);
-//void datas_Migration_base(struct ExportData *Datas){
+//void datas_Migration_base(struct ExportData *Datas);
+
+void text_to_xml(void);
+int ajouter_data(struct content *content , xmlNodePtr xmlNodePtr, int size);
 #endif /* file_control_h */

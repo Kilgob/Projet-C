@@ -110,7 +110,7 @@ void data_export(struct WidgetBDD *Datas){
 
 int export_SQL(struct WidgetBDD *Datas, FILE *fileSave){
     int i = 0,j;
-    int check_complete_array = 1;
+//    int check_complete_array = 1;
     char check_array[50];
 //    char check_Pri[50];
         for(i = 0; i < Datas->nbr_Column; i++){
@@ -193,6 +193,46 @@ int export_JSON(struct WidgetBDD *Datas, FILE *fileSave, int task, struct json_o
     return 0;
 }
 int export_XML(struct WidgetBDD *Datas, FILE *fileSave){
-    return 1;
+    int i = 0;
+
+
+    struct content *Content;
+    Content = malloc(sizeof(struct content) * Datas->nbr_Column);
+    
+    xmlDocPtr doc = NULL;       /* document pointer */
+    xmlNodePtr root_node = NULL;/* node pointer */
+//    xmlNodePtr root_node2 = NULL;/* node pointer */
+    //char buff[256];
+    xmlNodePtr node;
+    xmlNodePtr node_child;
+
+    
+    //Creates a new document, a node and set it as a root node
+    doc = xmlNewDoc(BAD_CAST "1.0");
+    root_node = xmlNewNode(NULL, BAD_CAST "data");
+    xmlDocSetRootElement(doc, root_node);
+//    root_node2 = xmlNewNode(NULL, BAD_CAST "data");
+//    xmlDocSetRootElement(root_node, root_node2);
+
+    
+    //dat 1
+    node = xmlNewChild(root_node, NULL, BAD_CAST "dat", NULL);
+    //ligne 1
+    for(i = 0; i < Datas->nbr_Column; i++){
+        if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(Datas->column_Name[i]))){
+            
+            node_child = xmlNewChild(node, NULL, BAD_CAST "array", BAD_CAST gtk_button_get_label(GTK_BUTTON(Datas->array_Name[i])));
+            xmlNewProp(node_child, BAD_CAST "column_name", BAD_CAST gtk_button_get_label(GTK_BUTTON(Datas->column_Name[i])));
+            xmlNewProp(node_child, BAD_CAST "column_type", BAD_CAST gtk_label_get_text(GTK_LABEL(Datas->column_Type[i])));
+            xmlNewProp(node_child, BAD_CAST "colum_key", BAD_CAST gtk_label_get_text(GTK_LABEL(Datas->column_Key[i])));
+        }
+    }
+
+    
+    // Affichage de l'arbre DOM tel qu'il est en mémoire
+    xmlDocFormatDump(stdout, doc, 1);
+    // Libération de la mémoire
+    xmlFreeDoc(doc);
+    return 0;
 }
 

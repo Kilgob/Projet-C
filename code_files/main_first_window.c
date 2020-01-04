@@ -22,10 +22,18 @@ GtkWidget *BoxBDD;
 
 void button_Connection(struct Button_Connection *Button_Connection){ //rendre le bouton sélectable
     gtk_button_set_label(GTK_BUTTON(Button_Connection->connection_button), "Se connecter");
+    Button_Connection->status = 1;
 }
 
-void set_json_save(struct json_conf jsonconf[]){
+void set_json_save(GtkWidget *name_Bdd_Widg, struct json_conf *jsonconf){
+    int i = 0;
+    while(strcmp(gtk_button_get_label(GTK_BUTTON(name_Bdd_Widg)), json_object_get_string(jsonconf->bdd[i].name_BDD))){
+        i++;
+    }
+    jsonconf->bdd_select = i;
+    
     Create_main_window1.Json_conf = jsonconf;
+    printf("nom du shéma sélectionné %d: %s\n", i, json_object_get_string(Create_main_window1.Json_conf->bdd[Create_main_window1.Json_conf->bdd_select].name_BDD));
 
 }
 //void set_json_save2(struct json_object **test){
@@ -94,7 +102,10 @@ static void activate (GtkApplication *app,gpointer user_data){
 
     FILE *PF_json_Conf;
     char Json_Conf [50000];
-    PF_json_Conf = fopen("/Users/fred/OneDrive/ESGI/Annee2/ProjetC/conf_bdd.json", "r");
+    if((PF_json_Conf = fopen("/Users/fred/OneDrive/ESGI/Annee2/ProjetC/conf_bdd.json", "r")) == NULL){
+        printf("ouverture du fichier de conf impossible");
+        exit(1);
+    }
     
     struct json_object *parsed_Json_Conf;
     struct json_object *parsed_Json_Conf_BDD_Buffer;
@@ -125,10 +136,6 @@ static void activate (GtkApplication *app,gpointer user_data){
     
     boxLogin =gtk_box_new(TRUE, 0);
     gtk_box_pack_start(GTK_BOX(boxConnection),boxLogin, TRUE, TRUE, 0);
-    
-    //label du status de la connection
-    Create_main_window1.LabelStatusConnection = gtk_label_new("");
-    gtk_box_pack_start(GTK_BOX(boxLogin), Create_main_window1.LabelStatusConnection, TRUE, TRUE, 0);
     
     
     Create_main_window1.app = app;
@@ -161,10 +168,12 @@ static void activate (GtkApplication *app,gpointer user_data){
     json_conf->nbr_server = n_Col_tab2;
     Struct_Conf_Name_Server->nbr_server = n_Col_tab2;
     
+    Create_main_window1.Json_conf_foa = json_conf;//stockage du 1er élément de la structure json_conf (1er élément du tableau)
+    
     int g = 1;
     
     for(k = 0; k < n_Col_tab2; k++){
-
+        
         parsed_Json_Conf_Server_Buffer = json_object_array_get_idx(parsed_Json_Conf, k);
         json_object_object_get_ex(parsed_Json_Conf_Server_Buffer, "IP", &json_conf[k].IP);
         json_object_object_get_ex(parsed_Json_Conf_Server_Buffer, "name_server", &json_conf[k].name_server);
@@ -177,7 +186,7 @@ static void activate (GtkApplication *app,gpointer user_data){
         
         Struct_Conf_Name_Server[k].Conf_Name_Server = gtk_button_new_with_label(json_object_get_string(json_conf[k].name_server));
 
-           Struct_Conf_Name_Server[k].Conf_Name_bdd = malloc(sizeof(GtkWidget) * n_Col_tab3);
+           Struct_Conf_Name_Server[k].Conf_Name_bdd = malloc(sizeof(GtkWidget *) * n_Col_tab3);
         gtk_box_pack_start(GTK_BOX(widgConfs), Struct_Conf_Name_Server[k].Conf_Name_Server, FALSE, FALSE, 10);
         g_signal_connect_swapped (Struct_Conf_Name_Server[k].Conf_Name_Server, "clicked", G_CALLBACK(set_bdd) , &Struct_Conf_Name_Server[k]);
 //            gtk_widget_set_size_request(Struct_Conf_Name_Server[k].Conf_Name_Server, 10, 0);
@@ -206,19 +215,24 @@ static void activate (GtkApplication *app,gpointer user_data){
             json_object_object_get_ex(parsed_Json_Conf_BDD_Buffer_idx, "bdd_type", &json_conf[k].bdd[j].BDD_Type);
             json_object_object_get_ex(parsed_Json_Conf_BDD_Buffer_idx, "user_mysql", &json_conf[k].bdd[j].user);
             json_object_object_get_ex(parsed_Json_Conf_BDD_Buffer_idx, "pass_mysql", &json_conf[k].bdd[j].pass_User);
+            json_object_object_get_ex(parsed_Json_Conf_BDD_Buffer_idx, "name_db", &json_conf[k].bdd[j].name_db);
             
             Struct_Conf_Name_Server[k].Conf_Name_bdd[j] = gtk_button_new_with_label(json_object_get_string(json_conf[k].bdd[j].name_BDD));
             g_signal_connect_swapped (Struct_Conf_Name_Server[k].Conf_Name_bdd[j], "clicked", G_CALLBACK(button_set_color) , &Struct_Conf_Name_Server[k].Conf_Name_bdd[j]);
 //            g_signal_connect_swapped (Struct_Conf_Name_Server[k].Conf_Name_bdd[j], "clicked", G_CALLBACK(set_json_save) , &json_conf[k].IP);
-            g_signal_connect_swapped (Struct_Conf_Name_Server[k].Conf_Name_bdd[j], "clicked", G_CALLBACK(set_json_save) , &json_conf[k]);
+            g_signal_connect (Struct_Conf_Name_Server[k].Conf_Name_bdd[j], "clicked", G_CALLBACK(set_json_save) , &json_conf[k]);
+            Button_Connection.status = 0;
             g_signal_connect_swapped (Struct_Conf_Name_Server[k].Conf_Name_bdd[j], "clicked", G_CALLBACK(button_Connection) , &Button_Connection);
             
         }
     }
     
-//    Create_main_window1.Json_conf = json_conf;
+    //label du status de la connection
+    Create_main_window1.LabelStatusConnection = gtk_label_new("");
+    gtk_box_pack_start(GTK_BOX(boxLogin), Create_main_window1.LabelStatusConnection, TRUE, TRUE, 0);
     
-    Create_main_window1.returnStatusConnexion = 1;
+//    Create_main_window1.Json_conf = json_conf;
+    Create_main_window1.status_connection = &Button_Connection;
     gtk_box_pack_start(GTK_BOX(boxConnection),Button_Connection.connection_button_box, TRUE, TRUE, 0);
     g_signal_connect (Button_Connection.connection_button, "clicked", G_CALLBACK (main_windows_create), &Create_main_window1);
 

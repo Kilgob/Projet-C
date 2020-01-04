@@ -1,25 +1,55 @@
 [
   {
     "IP":"54.37.153.32",
-    "name_server":"Fred1",
+    "name_server":"Serveur Project C",
     "user_webService" : "user",
     "pass_webService" : "pass",
+    "pjson" : "5000",
+    "pjson_pass_api":"/tom/json_upload",
     "BDD":[
       {
         "api_route":"/mysql1/mysql1",
-        "name_bdd":"db",
-        "port_mysql":"5001",
-        "port_local":"3306",
-        "mdp_root":"Fr3dCl3m",
+        "schema":"db",
+        "name_db":"db",
+        "port_api":"5001",
+        "port_mysql":"3306",
+        "pass_root":"Wratsn01",
+        "user_mysql":"root",
+        "pass_mysql":"Wratsn01",
         "bdd_type":"mysql"
       },
       {
-        "api_route":"/mysql2/mysql2",
-        "name_bdd":"db",
-        "port_mysql":"5002",
-        "port_local":"3306",
-        "mdp_root":"Fr3dCl3m",
+        "api_route":"/mysql1/mysql1",
+        "schema":"dbhuissier",
+        "name_db":"db",
+        "port_api":"5001",
+        "port_mysql":"3306",
+        "pass_root":"Wratsn01",
+        "user_mysql":"root",
+        "pass_mysql":"Wratsn01",
         "bdd_type":"mysql"
+      },
+      {
+        "api_route":"/vertica1/vertica1",
+        "schema":"SCHEMA1",
+        "name_db":"DBFRED",
+        "port_api":"5003",
+        "port_mysql":"5433",
+        "pass_root":"admin",
+        "user_mysql":"dbadmin",
+        "pass_mysql":"admin",
+        "bdd_type":"vertica"
+      },
+      {
+        "api_route":"/vertica1/vertica1",
+        "schema":"SCHEMA2",
+        "name_db":"DBFRED",
+        "port_api":"5003",
+        "port_mysql":"5433",
+        "pass_root":"admin",
+        "user_mysql":"dbadmin",
+        "pass_mysql":"admin",
+        "bdd_type":"vertica"
       }
     ]
   },
@@ -28,22 +58,41 @@
     "name_server":"Fred2",
     "user_webService" : "user",
     "pass_webService" : "pass",
+    "pjson" : "5000",
+    "pjson_pass_api":"/tom/json_upload",
     "BDD":[
       {
         "api_route":"/mysql1/mysql1",
-        "name_bdd":"bdd 2",
-        "port_mysql":"5010",
-        "port_local":"3306",
-        "mdp_root":"Fr3dCl3m",
-        "bdd_type":"mysql"
+        "schema":"bdd 2",
+        "name_db":"db",
+        "port_api":"5001",
+        "port_mysql":"3306",
+        "pass_root":"Wratsn01",
+        "user_mysql":"root",
+        "pass_mysql":"Wratsn01",
+        "bdd_type":"mongodb"
       },
       {
         "api_route":"/mysql1/mysql1",
-        "name_bdd":"bdd 3",
-        "port_mysql":"5011",
-        "port_local":"3306",
-        "mdp_root":"Fr3dCl3m",
-        "bdd_type":"mysql"
+        "schema":"bdd 3",
+        "name_db":"db",
+        "port_api":"5001",
+        "port_mysql":"3306",
+        "pass_root":"Wratsn01",
+        "user_mysql":"root",
+        "pass_mysql":"Wratsn01",
+        "bdd_type":"vertica"
+      },
+      {
+        "api_route":"/mysql1/mysql1",
+        "schema":"bdd 3",
+        "name_db":"db",
+        "port_api":"5001",
+        "port_mysql":"3306",
+        "pass_root":"Wratsn01",
+        "user_mysql":"root",
+        "pass_mysql":"Wratsn01",
+        "bdd_type":"vertica"
       }
     ]
   }

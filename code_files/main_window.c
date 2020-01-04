@@ -54,10 +54,11 @@ void reactivate_col(struct Recup_Widgets *Data){
         g_list_free(iter);
 }
 
+
 void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreateMainWindow){
-    
+//    printf("nom du shéma sélectionné : %s\n", json_object_get_string(ForCreateMainWindow->Json_conf->bdd->name_BDD));
 //    printf("Log SQLSTATUS : %d\n",ForCreateMainWindow->Login->returnStatusConnexion); //Debug du statut de connexion à la BDD
-    if(ForCreateMainWindow->returnStatusConnexion){
+    if(ForCreateMainWindow->status_connection->status){
 //        printf("%p",ForCreateMainWindow->Json_conf);
 //        printf("%s",json_object_get_string(ForCreateMainWindow->Json_conf->IP));
 //        struct json_object *arraysBase = get_Arrays_Base();
@@ -98,10 +99,12 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
         
         grid = gtk_grid_new ();
         grid2 = gtk_grid_new ();
-        gtk_container_add (GTK_CONTAINER (window_Main), grid2);
-        gtk_grid_attach(GTK_GRID(grid2), grid, 0, 1, 700, 500);
-        gtk_container_add (GTK_CONTAINER (grid), Information_Scroll_Box);
 
+        gtk_container_add (GTK_CONTAINER (Information_Scroll_Box), grid);
+        gtk_widget_set_size_request(Information_Scroll_Box, 750, 500);
+        gtk_grid_attach(GTK_GRID(grid2), Information_Scroll_Box, 1, 100, 700, 500);
+//        gtk_container_add (GTK_CONTAINER (window_Main), Information_Scroll_Box);
+        gtk_container_add (GTK_CONTAINER (window_Main), grid2);
         
         mainPageLabel = gtk_label_new("Liste des tables et des colonnes de la base");
 //        gtk_label_set_width_chars(GTK_LABEL(mainPageLabel), 50); //aucun impacte
@@ -110,6 +113,7 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
         GtkWidget *groupDatasJSON[n_Col_tab];
         
         struct Migration *Migration_Datas = malloc(sizeof(struct Migration));
+        Migration_Datas->Json_conf_foa = ForCreateMainWindow->Json_conf_foa;
         
         //widget du retour JSON
         static struct WidgetBDD Widgets;
@@ -125,9 +129,6 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
         
         struct ExportData *Export;
         Export = malloc(sizeof(struct ExportData));
-//        Export.JSONDatas = Data;
-        struct MigrationData *Migration;
-        Migration = malloc(sizeof(struct Migration));
 
         //        GtkWidget *Array_bdd[n_Col_tab/5]; //pas optimale
         Widgets.nbr_Array = -1;
@@ -148,11 +149,25 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
             char check_Name_Table[50];
             arrayBase_buffer = json_object_array_get_idx(arraysBase, i);
 //            printf("%lu. %s\n", i+1,json_object_get_string(arrayBase_buffer));
-            json_object_object_get_ex(arrayBase_buffer, "TABLE_NAME", &Table_Name);
-            json_object_object_get_ex(arrayBase_buffer, "COLUMN_TYPE", &Column_Type);
             json_object_object_get_ex(arrayBase_buffer, "TABLE_SCHEMA", &Table_Schema);
+            if (json_object_get_string(Table_Schema) == NULL)
+                json_object_object_get_ex(arrayBase_buffer, "table_schema", &Table_Schema);
+            
+            json_object_object_get_ex(arrayBase_buffer, "TABLE_NAME", &Table_Name);
+            if (json_object_get_string(Table_Name) == NULL)
+                json_object_object_get_ex(arrayBase_buffer, "table_name", &Table_Name);
+            
+            json_object_object_get_ex(arrayBase_buffer, "COLUMN_TYPE", &Column_Type);
+            if (json_object_get_string(Column_Type) == NULL)
+                json_object_object_get_ex(arrayBase_buffer, "data_type", &Column_Type);
+            
             json_object_object_get_ex(arrayBase_buffer, "COLUMN_NAME", &Column_Name);
+            if (json_object_get_string(Column_Name) == NULL)
+                json_object_object_get_ex(arrayBase_buffer, "column_name", &Column_Name);
+            
             json_object_object_get_ex(arrayBase_buffer, "COLUMN_KEY", &Column_Key);
+            if (json_object_get_string(Column_Key) == NULL)
+                json_object_object_get_ex(arrayBase_buffer, "is_identity", &Column_Key);
 
             
             //Les widgets d'affichage
@@ -218,7 +233,7 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
 
         //Création du bouton de déconnexion et de son g_signal
         Button_For_Deco = gtk_button_new_with_label ("Quitter");
-        g_signal_connect (Button_For_Deco, "clicked", G_CALLBACK (gtk_window_close),window_Main);
+        g_signal_connect (Button_For_Deco, "clicked", G_CALLBACK (gtk_window_close), window_Main);
         
         //Création de la box du bouton déconnexion, ajout du bouton dans sa box et ajout dans la box main
         Box_For_Button_Deco = gtk_button_box_new (GTK_ORIENTATION_HORIZONTAL);
@@ -232,7 +247,7 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
         g_signal_connect_swapped (button_Migration, "clicked", G_CALLBACK (migration), Migration_Datas);
         
         Migration_Datas->label_Migration_Status = gtk_label_new("");
-        Migration_Datas->Target_Serv = gtk_combo_box_text_new();
+        Migration_Datas->Target_Schema = gtk_combo_box_text_new();
         
         
         Widgets.nbr_Column = i;
@@ -241,14 +256,16 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
         j = 0;//pour le switch suivant (gtk_combo_box)
         char temp[2];//peut devenir une fonction
         for(i = 0; i < ForCreateMainWindow->Json_conf->nbr_server; i++){
-            for(h = 0; h < ForCreateMainWindow->Json_conf->nbr_bdd; h++){
+            for(h = 0; h < ForCreateMainWindow->Json_conf[i].nbr_bdd; h++){
                 sprintf(temp, "%d",j++); //convetir int en char pour la fonciton suivante
-                gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(Migration_Datas->Target_Serv), temp,json_object_get_string(ForCreateMainWindow->Json_conf[i].bdd[h].name_BDD));
+                if(strcmp(json_object_get_string(ForCreateMainWindow->Json_conf->bdd[ForCreateMainWindow->Json_conf->bdd_select].name_BDD), json_object_get_string(ForCreateMainWindow->Json_conf[i].bdd[h].name_BDD)))
+                    gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(Migration_Datas->Target_Schema), temp, json_object_get_string(ForCreateMainWindow->Json_conf[i].bdd[h].name_BDD));
             }
         }
-
+//        g_signal_connect (Migration_Datas->Target_Schema, "clicked", G_CALLBACK (set_bdd_import), ForCreateMainWindow->Json_conf[i].bdd);
+        
         gtk_grid_attach (GTK_GRID (grid2), button_Migration, 900, 350, 1, 1);
-        gtk_grid_attach (GTK_GRID (grid2), Migration_Datas->Target_Serv, 930, 350, 1, 1);
+        gtk_grid_attach (GTK_GRID (grid2), Migration_Datas->Target_Schema, 930, 350, 1, 1);
         gtk_grid_attach (GTK_GRID (grid2), Migration_Datas->label_Migration_Status, 900, 360, 1, 1);
         
         
@@ -283,12 +300,11 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
         gtk_grid_attach (GTK_GRID (grid2), Box_For_Button_Deco, 900, 430, 1, 1);
         
         Widgets.Export_Info = Export;
-        Widgets.Migration_Info = Migration;
         
         
         gtk_widget_show_all (window_Main);
     }
     else
-        gtk_label_set_text(GTK_LABEL(ForCreateMainWindow->LabelStatusConnection), "Connection refusée");
+        gtk_label_set_text(GTK_LABEL(ForCreateMainWindow->LabelStatusConnection), "Choisissez un schéma dans une base de données");
     
 }
