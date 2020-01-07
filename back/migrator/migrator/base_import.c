@@ -43,46 +43,46 @@ int mysqlVmysql_import(struct Json_infoserv *Json_infoserv, struct Json_export *
 
 int mysqlVvertica_import(struct Json_infoserv *Json_infoserv, struct Json_export *Json_export,  char *dir){
     DIR * rep;
-        char check_name_file[200];
-        char cmd[200];
-        int i = 0;
-        
-        if (rep != NULL)
-        {
-            sprintf(check_name_file, "%s_dump.sql", Json_infoserv->uuid);
-            struct dirent * ent;
+    char check_name_file[200];
+    char cmd[200];
+    int i = 0;
+    
+    sprintf(check_name_file, "%s_dump.sql", Json_infoserv->uuid);
+    struct dirent * ent;
 
-    //      vsql -h debian10-2 -U dbadmin -d P1ODSGL1 -w admin -c "drop table if exists DBFRED.tabvilles" ; // drop des tables
-            for(i = 0; i < Json_export->nbr_arrays ; i++){
-                char temp[100];
-                sprintf(cmd, "vsql -h %s -p %s -U %s -d %s -w %s -c \"truncate table " , json_object_get_string(Json_infoserv->ip_target), json_object_get_string(Json_infoserv->port), json_object_get_string(Json_infoserv->user), json_object_get_string(Json_infoserv->name_db_target), json_object_get_string(Json_infoserv->pass_user));
-                sprintf(temp, "%s.%s\";",json_object_get_string(Json_infoserv->name_schema_target),json_object_get_string(Json_export[i].array));
-                strcat(cmd, temp);
-                system(cmd);
-            }
+//      vsql -h debian10-2 -U dbadmin -d P1ODSGL1 -w admin -c "drop table if exists DBFRED.tabvilles" ; // drop des tables
+    for(i = 0; i < Json_export->nbr_arrays ; i++){
+        char temp[100];
+        sprintf(cmd, "vsql -h %s -p %s -U %s -d %s -w %s -c \"truncate table " , json_object_get_string(Json_infoserv->ip_target), json_object_get_string(Json_infoserv->port), json_object_get_string(Json_infoserv->user), json_object_get_string(Json_infoserv->name_db_target), json_object_get_string(Json_infoserv->pass_user));
+        sprintf(temp, "%s.%s\";",json_object_get_string(Json_infoserv->name_schema_target),json_object_get_string(Json_export[i].array));
+        strcat(cmd, temp);
+        system(cmd);
+    }
 
-            
-    //    vsql -h debian10-2 -U dbadmin -d P1ODSGL1 -w admin -c "COPY DBFRED.tabvilles from LOCAL 'uuid_data_tabvilles.csv' parser fdelimitedparser(header=true)" ; //import des données
+    
+//    vsql -h debian10-2 -U dbadmin -d P1ODSGL1 -w admin -c "COPY DBFRED.tabvilles from LOCAL 'uuid_data_tabvilles.csv' parser fdelimitedparser(header=true)" ; //import des données
 //            printf("import vers vertica %ld\n", Json_export->nbr_arrays);
-            for(i = 0; i <Json_export->nbr_arrays ; i++){
-                rep = opendir(dir);
-                sprintf(check_name_file, "%s_data_%s.csv", Json_infoserv->uuid, json_object_get_string(Json_export[i].array));
-//                printf("import vers vertica (boucle) %s %s\n", dir, check_name_file);
-                while ((ent = readdir(rep)) != NULL){
-                    if(!strcmp(ent->d_name, check_name_file)){
-                        sprintf(cmd, "vsql -h %s -p %s -U %s -d %s -w %s -c \"COPY %s.%s from LOCAL '%s%s' parser fdelimitedparser(header=true)\" ;" , json_object_get_string(Json_infoserv->ip_target), json_object_get_string(Json_infoserv->port), json_object_get_string(Json_infoserv->user), json_object_get_string(Json_infoserv->name_db_target), json_object_get_string(Json_infoserv->pass_user), json_object_get_string(Json_infoserv->name_schema_target), json_object_get_string(Json_export[i].array), dir, check_name_file);
-//                        printf("fichier repéré, remonté du fichié csv %d (cmd) : %s\n", i, cmd);
-                        system(cmd);
-                        break;
-                    }
-                        printf("fichier dans le dossier %s\n", ent->d_name);
-    //                i++;
-                }
-                closedir(rep);
-            }
-        }
-        else
+    for(i = 0; i <Json_export->nbr_arrays ; i++){
+        rep = opendir(dir);
+        if (rep == NULL)
             return 1;
+        else{
+            sprintf(check_name_file, "%s_data_%s.csv", Json_infoserv->uuid, json_object_get_string(Json_export[i].array));
+    //                printf("import vers vertica (boucle) %s %s\n", dir, check_name_file);
+            while ((ent = readdir(rep)) != NULL){
+                if(!strcmp(ent->d_name, check_name_file)){
+                    sprintf(cmd, "vsql -h %s -p %s -U %s -d %s -w %s -c \"COPY %s.%s from LOCAL '%s%s' parser fdelimitedparser(header=true)\" ;" , json_object_get_string(Json_infoserv->ip_target), json_object_get_string(Json_infoserv->port), json_object_get_string(Json_infoserv->user), json_object_get_string(Json_infoserv->name_db_target), json_object_get_string(Json_infoserv->pass_user), json_object_get_string(Json_infoserv->name_schema_target), json_object_get_string(Json_export[i].array), dir, check_name_file);
+    //                        printf("fichier repéré, remonté du fichié csv %d (cmd) : %s\n", i, cmd);
+                    system(cmd);
+                    break;
+                }
+                    printf("fichier dans le dossier %s\n", ent->d_name);
+    //                i++;
+            }
+            closedir(rep);
+        }
+
+    }
     return 0;
 }
 
@@ -172,18 +172,18 @@ int verticaVvertica_import(struct Json_infoserv *Json_infoserv, struct Json_expo
     
     if (rep != NULL)
     {
-        sprintf(check_name_file, "%s_dump.sql", Json_infoserv->uuid);
         struct dirent * ent;
 
 //      vsql -h debian10-2 -U dbadmin -d P1ODSGL1 -w admin -c "drop table if exists DBFRED.tabvilles" ; // drop des tables
         for(i = 0; i < Json_export->nbr_arrays ; i++){
-            char temp[100];
-            sprintf(cmd, "vsql -h %s -p %s -U %s -d %s -w %s -c \"drop table if exists " , json_object_get_string(Json_infoserv->ip_target), json_object_get_string(Json_infoserv->port), json_object_get_string(Json_infoserv->user), json_object_get_string(Json_infoserv->name_db_target), json_object_get_string(Json_infoserv->pass_user));
-            sprintf(temp, "%s.%s\";",json_object_get_string(Json_infoserv->name_schema_target),json_object_get_string(Json_export[i].array));
-            strcat(cmd, temp);
+            sprintf(check_name_file, "%s_dump_%s.sql", Json_infoserv->uuid, json_object_get_string(Json_export[i].array));
+//            char temp[100];
+            sprintf(cmd, "vsql -h %s -p %s -U %s -d %s -w %s -c \"drop table if exists %s.%s\";" , json_object_get_string(Json_infoserv->ip_target), json_object_get_string(Json_infoserv->port), json_object_get_string(Json_infoserv->user), json_object_get_string(Json_infoserv->name_db_target), json_object_get_string(Json_infoserv->pass_user), json_object_get_string(Json_infoserv->name_schema_target), json_object_get_string(Json_export[i].array));
+//            sprintf(temp, "%s.%s\";",json_object_get_string(Json_infoserv->name_schema_target), json_object_get_string(Json_export[i].array));
+//            strcat(cmd, temp);
             system(cmd);
-        }
         
+//        rep = opendir(dir);
 //      vsql -h debian10-2 -U dbadmin -d P1ODSGL1 -w admin -f uuid_create_tabvilles.sql ; // creation des tables
         while ((ent = readdir(rep)) != NULL)
         {
@@ -198,7 +198,7 @@ int verticaVvertica_import(struct Json_infoserv *Json_infoserv, struct Json_expo
         closedir(rep);
         
 //    vsql -h debian10-2 -U dbadmin -d P1ODSGL1 -w admin -c "COPY DBFRED.tabvilles from LOCAL 'uuid_data_tabvilles.csv' parser fdelimitedparser(header=true)" ; //import des données
-        for(i = 0; i <Json_export->nbr_arrays ; i++){
+//        for(i = 0; i <Json_export->nbr_arrays ; i++){
             rep = opendir(dir);
             sprintf(check_name_file, "%s_data_%s.csv", Json_infoserv->uuid, json_object_get_string(Json_export[i].array));
             while ((ent = readdir(rep)) != NULL){

@@ -8,9 +8,11 @@
 
 #include "link_main.h"
 #include "file_control.h"
+#include "prgm_fork.h"
 #include <stdint.h>
 
 GtkWidget *window_Main;
+pid_t pid = -1;
 
 void unselect_array_names(struct WidgetBDD *Data){
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Data->array_Name) , FALSE);
@@ -53,6 +55,18 @@ void reactivate_col(struct Recup_Widgets *Data){
         g_list_free(children2);
         g_list_free(iter);
 }
+//Fonction pour afficher ou non les colonnes d'une table
+void Set_visibility_columns(struct Recup_Widgets *Data){
+    GList *children, *children2 = NULL, *iter;
+    children = gtk_container_get_children(GTK_CONTAINER(Data->Array_bdd));
+    for(iter = children; iter != NULL; iter = g_list_next(iter)){
+        gtk_widget_set_visible(iter->data, !gtk_widget_get_visible(iter->data));
+    }
+    g_list_free(children);
+    g_list_free(children2);
+    g_list_free(iter);
+    
+}
 
 
 void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreateMainWindow){
@@ -83,32 +97,59 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
 //        GtkWidget *box_Main;
         GtkWidget *Box_For_Button_Deco;
         GtkWidget *Button_For_Deco;
-        GtkWidget *grid;
-        GtkWidget *grid2;
+        GtkWidget *gridLeft;
+        GtkWidget *gridRight;
+        GtkWidget *gridMain;
+        GtkWidget *button_Back = gtk_button_new_with_label("Retour"); //bouton permettant de revenir à la page de choix des schémas
         GtkWidget *button_Export;
         GtkWidget *button_Migration;
         GtkWidget *groupExport = gtk_box_new(FALSE, 1);
+//        gtk_box_set_homogeneous(GTK_BOX(groupExport),FALSE);
+        GtkWidget **screen_Select;
+        
+        GtkWidget *right_Block = gtk_box_new(FALSE, 10);
+        GtkWidget *right_Block_Current_Task = gtk_box_new(FALSE, 10);
+        
+        //Blocks de widgets contenant les statuts des réplications en cours
+        GtkWidget *Statut_Transfert_Block = gtk_box_new(TRUE, 10);
+        GtkWidget *statut_Task_Block_Frame = gtk_frame_new(NULL);
+        
+        GtkWidget *frame_Left = gtk_frame_new(NULL);
+        GtkWidget *frame_Right = gtk_frame_new(NULL);
+        GtkWidget *frame_Right_Current_Task = gtk_frame_new(NULL);
+        gtk_frame_set_shadow_type(GTK_FRAME(frame_Left), GTK_SHADOW_OUT);
+        gtk_frame_set_shadow_type(GTK_FRAME(frame_Right), GTK_SHADOW_OUT);
+        gtk_frame_set_shadow_type(GTK_FRAME(frame_Right_Current_Task), GTK_SHADOW_OUT);
+
+        GtkWidget * Picture;
+        Picture = gtk_image_new_from_file("/Users/fred/OneDrive/ESGI/Annee2/ProjetC/Oral/ferme-de-serveur.jpg");
+        
         
         window_Main = gtk_application_window_new(ForCreateMainWindow->app);
         Information_Scroll_Box = gtk_scrolled_window_new(NULL, NULL);
+        ForCreateMainWindow->window_Main = window_Main;
         
         gtk_widget_destroy(ForCreateMainWindow->oldWindow);
         gtk_window_set_title (GTK_WINDOW (window_Main), "gestion de la BDD");//Nom de la fenetre
         gtk_window_set_default_size (GTK_WINDOW (window_Main), 1000, 600);
         gtk_window_set_resizable(GTK_WINDOW(window_Main), FALSE);
         
-        grid = gtk_grid_new ();
-        grid2 = gtk_grid_new ();
+        gridLeft = gtk_grid_new ();
+        gridRight = gtk_grid_new ();
+        gridMain = gtk_grid_new ();
 
-        gtk_container_add (GTK_CONTAINER (Information_Scroll_Box), grid);
-        gtk_widget_set_size_request(Information_Scroll_Box, 750, 500);
-        gtk_grid_attach(GTK_GRID(grid2), Information_Scroll_Box, 1, 100, 700, 500);
-//        gtk_container_add (GTK_CONTAINER (window_Main), Information_Scroll_Box);
-        gtk_container_add (GTK_CONTAINER (window_Main), grid2);
+        
+        gtk_container_add (GTK_CONTAINER (frame_Left), Information_Scroll_Box);
+        gtk_container_add (GTK_CONTAINER (Information_Scroll_Box), gridLeft);
+        gtk_widget_set_size_request(Information_Scroll_Box, 750, 550);
+        gtk_grid_attach(GTK_GRID(gridMain), frame_Left, 1, 100, 700, 500);
+//        gtk_container_add (GTK_CONTAINER (left_Block), gridMain);
+//        gtk_container_add (GTK_CONTAINER (frame_Left), left_Block);
+        gtk_container_add (GTK_CONTAINER (window_Main), gridMain);//frame_Left
         
         mainPageLabel = gtk_label_new("Liste des tables et des colonnes de la base");
 //        gtk_label_set_width_chars(GTK_LABEL(mainPageLabel), 50); //aucun impacte
-        gtk_grid_attach(GTK_GRID(grid2), mainPageLabel, 1, 1, 1, 100);
+        gtk_grid_attach(GTK_GRID(gridMain), mainPageLabel, 1, 1, 1, 100);
 
         GtkWidget *groupDatasJSON[n_Col_tab];
         
@@ -123,7 +164,6 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
         Widgets.column_Type = malloc(sizeof(GtkWidget *) *n_Col_tab);
         Widgets.array_Name = malloc(sizeof(GtkWidget *) *n_Col_tab);
         Widgets.array_Schema = malloc(sizeof(GtkWidget *) *n_Col_tab);
-        *Widgets.array_NameBis = malloc(sizeof(char) *n_Col_tab);
         
 
         
@@ -138,9 +178,11 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
         Recup_Widgets->number_array = 0;
         int h = 0;
         
-        struct desactivate *Desactivate[2]; //struct permettant de bloquer le signal
-        Desactivate[0] = malloc(sizeof(struct desactivate)*n_Col_tab);
-        Desactivate[1] = malloc(sizeof(struct desactivate)*n_Col_tab);
+//        struct desactivate *Desactivate[2]; //struct permettant de bloquer le signal
+//        Desactivate[0] = malloc(sizeof(struct desactivate)*n_Col_tab); //colonne
+//        Desactivate[1] = malloc(sizeof(struct desactivate)*n_Col_tab); //table (peu etre inverse)
+        
+        screen_Select = malloc(sizeof(GtkWidget) * n_Col_tab);//widgets pour afficher les colonnes d'une tables
         //afficher chaque élément du tableau
         for (i = 0; i<n_Col_tab; i++) {
             
@@ -182,27 +224,30 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
             ++j; //Pour ne pas démarrer à 0
             if(strcmp(check_Name_Base, json_object_get_string(Table_Schema))){
                 strcpy(check_Name_Base, json_object_get_string(Table_Schema));
-                gtk_grid_attach (GTK_GRID (grid), Widgets.array_Schema[i], 0, j++, 1, 2);
+                gtk_grid_attach (GTK_GRID (gridLeft), Widgets.array_Schema[i], 0, j++, 1, 2);
 //                g_signal_connect (array_Schema[i], "clicked", G_CALLBACK(save_schema_selection) , &Data[i]);
             }
             
        
             if(strcmp(check_Name_Table, json_object_get_string(Table_Name))){
                 strcpy(check_Name_Table, json_object_get_string(Table_Name));
-                gtk_grid_attach (GTK_GRID (grid), Widgets.array_Name[i], 1, j, 2, 1);
+                gtk_grid_attach (GTK_GRID (gridLeft), Widgets.array_Name[i], 1, j, 2, 1);
                 Widgets.nbr_Array++;
-                
                 
                 Recup_Widgets[Widgets.nbr_Array].idGsignala = malloc(sizeof(gulong) *n_Col_tab);
 //                Recup_Widgets[Widgets.nbr_Array].Array_bdd = malloc(sizeof(GtkWidget *)*n_Col_tab);
                 Recup_Widgets[Widgets.nbr_Array].Array_bdd = gtk_box_new(TRUE, 0);
-                gtk_grid_attach(GTK_GRID (grid), Recup_Widgets[Widgets.nbr_Array].Array_bdd, 2, ++j, 12, 1);
+                gtk_grid_attach(GTK_GRID (gridLeft), Recup_Widgets[Widgets.nbr_Array].Array_bdd, 2, ++j, 12, 1);
             
-//                strcpy(Widgets.array_NameBis[i], json_object_get_string(Table_Name));
+                
+                screen_Select[i] = gtk_link_button_new_with_label("", "afficher");//bouton pour afficher ou non les colonnes
+                gtk_grid_attach(GTK_GRID (gridLeft), screen_Select[i], 2, j -1, 12, 1); // j-1 pour revenir au même niveau que le nom de la table
+                //signal permettant d'afficher ou non les colonnes
+                g_signal_connect_swapped (screen_Select[i], "activate-link", G_CALLBACK(Set_visibility_columns) , &Recup_Widgets[Widgets.nbr_Array]);
                 
                 Recup_Widgets[Widgets.nbr_Array].array_Name = Widgets.array_Name[i];
 //                Recup_Widgets[Widgets.nbr_Array].datas = &Array_bdd[Widgets.nbr_Array];
-                Recup_Widgets->number_array++;//pour pouvoir boucler sur tous les éléments lors de l'export
+                Recup_Widgets->number_array++;//pour pouvoir boucler sur tous les éléments lors de l'export/migration
                 
 //                Desactivate[1][Widgets.nbr_Array].name = &Widgets.array_Name[i];
                 g_signal_connect_swapped (Widgets.array_Name[i], "clicked", G_CALLBACK(desactivate_col) , &Recup_Widgets[Widgets.nbr_Array]);
@@ -233,11 +278,12 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
 
         //Création du bouton de déconnexion et de son g_signal
         Button_For_Deco = gtk_button_new_with_label ("Quitter");
-        g_signal_connect (Button_For_Deco, "clicked", G_CALLBACK (gtk_window_close), window_Main);
+        g_signal_connect_swapped (Button_For_Deco, "clicked", G_CALLBACK (gtk_window_close), window_Main);
         
         //Création de la box du bouton déconnexion, ajout du bouton dans sa box et ajout dans la box main
         Box_For_Button_Deco = gtk_button_box_new (GTK_ORIENTATION_HORIZONTAL);
         gtk_box_pack_start(GTK_BOX(Box_For_Button_Deco),Button_For_Deco, TRUE, TRUE, 0);
+        gtk_grid_attach (GTK_GRID (gridRight), Box_For_Button_Deco, 5, 60, 1, 1);
 
         
         Migration_Datas->Widgets = &Widgets;
@@ -262,11 +308,44 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
                     gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT(Migration_Datas->Target_Schema), temp, json_object_get_string(ForCreateMainWindow->Json_conf[i].bdd[h].name_BDD));
             }
         }
-//        g_signal_connect (Migration_Datas->Target_Schema, "clicked", G_CALLBACK (set_bdd_import), ForCreateMainWindow->Json_conf[i].bdd);
+
+        gtk_grid_attach (GTK_GRID (gridRight), button_Migration, 2, 1, 1, 1);
+        gtk_grid_attach (GTK_GRID (gridRight), Migration_Datas->Target_Schema, 3, 1, 1, 1);
+        gtk_grid_attach (GTK_GRID (gridRight), Migration_Datas->label_Migration_Status, 10, 1, 1, 1);
         
-        gtk_grid_attach (GTK_GRID (grid2), button_Migration, 900, 350, 1, 1);
-        gtk_grid_attach (GTK_GRID (grid2), Migration_Datas->Target_Schema, 930, 350, 1, 1);
-        gtk_grid_attach (GTK_GRID (grid2), Migration_Datas->label_Migration_Status, 900, 360, 1, 1);
+
+        GtkWidget *statut_Task_Block_Scrollbar = gtk_scrolled_window_new(NULL, NULL);
+        
+        struct Block_Status *Block_Status_Replic = malloc(sizeof(Block_Status_Replic));
+        Block_Status_Replic->statut_Task_Block = gtk_box_new(TRUE, 0);
+        Block_Status_Replic->progress_Bar = gtk_progress_bar_new();
+        Block_Status_Replic->label_Status_bar = gtk_label_new("Statut des réplications et liste :");
+        
+        GtkWidget *Box_Statut_Bar = gtk_box_new(FALSE, 0);
+        gtk_box_pack_start(GTK_BOX(Box_Statut_Bar), Block_Status_Replic->label_Status_bar, FALSE, FALSE, 0);
+        gtk_box_pack_start(GTK_BOX(Box_Statut_Bar), Block_Status_Replic->progress_Bar, FALSE, FALSE, 0);
+        
+        gtk_box_pack_start(GTK_BOX(Statut_Transfert_Block), Box_Statut_Bar, FALSE, FALSE, 0);
+        gtk_widget_set_size_request(Box_Statut_Bar, 100, 20);
+        gtk_widget_set_size_request(Block_Status_Replic->progress_Bar, 1, 5);
+        
+        gtk_container_add(GTK_CONTAINER(statut_Task_Block_Scrollbar), Block_Status_Replic->statut_Task_Block);
+        gtk_widget_set_size_request(statut_Task_Block_Scrollbar, 50, 150);
+        gtk_container_add(GTK_CONTAINER(Statut_Transfert_Block), statut_Task_Block_Scrollbar);
+//        gtk_widget_set_size_request(Block_Status_Replic->statut_Task_Block, 50, 200);
+        gtk_container_add(GTK_CONTAINER(statut_Task_Block_Frame), Statut_Transfert_Block);
+        gtk_widget_set_size_request(statut_Task_Block_Frame, 50, 150);
+        gtk_grid_attach(GTK_GRID (gridMain), statut_Task_Block_Frame, 905, 450, 1, 1);//905, 300, 1, 1
+
+
+        
+        pid = fork(); //Process qui boucle pour envoyer les fichier d'import de manière asynchrone
+        if(pid == 0){
+            fork_import(json_object_get_string(ForCreateMainWindow->Json_conf->PJSON), json_object_get_string(ForCreateMainWindow->Json_conf->IP));
+        }
+        
+        g_timeout_add_seconds(2, G_SOURCE_FUNC(block_status_get), Block_Status_Replic);//Pour la partie d'affichage des imports en cours
+        
         
         
         
@@ -292,12 +371,24 @@ void main_windows_create(GtkWidget *widget, struct create_main_window *ForCreate
         gtk_box_pack_start(GTK_BOX(groupExport), button_Export, TRUE, TRUE, 0);
         gtk_box_pack_start(GTK_BOX(groupExport), Export->target_Folder, TRUE, TRUE, 0);
         gtk_box_pack_start(GTK_BOX(groupExport), Export->target_Type, TRUE, TRUE, 0);
-//        gtk_box_pack_start(GTK_BOX(groupExport), Export->label_Status, TRUE, TRUE, 5);
+        gtk_box_pack_start(GTK_BOX(groupExport), Export->label_Status, TRUE, TRUE, 5);
         gtk_widget_set_size_request(Export->target_Folder, 400, 5);
         
-        gtk_grid_attach(GTK_GRID (grid2), groupExport, 900, 400, 1, 1);
-        gtk_grid_attach (GTK_GRID (grid2), Export->label_Status, 900, 410, 1, 1);
-        gtk_grid_attach (GTK_GRID (grid2), Box_For_Button_Deco, 900, 430, 1, 1);
+    
+//        gtk_grid_attach(GTK_GRID (gridRight), groupExport, 1, 1, 20, 1);
+        gtk_grid_attach(GTK_GRID (gridRight), groupExport, 2, 40, 20, 1);
+        gtk_box_pack_start(GTK_BOX(right_Block), gridRight, TRUE, TRUE, 10);
+        gtk_container_add(GTK_CONTAINER(frame_Right), right_Block);
+        
+        //bouton de retour sur la fenetre 1;
+        gtk_grid_attach(GTK_GRID (gridRight), button_Back, 6, 60, 1, 1);
+        g_signal_connect(button_Back, "clicked", G_CALLBACK(activate), ForCreateMainWindow);
+        
+        //Block contenant les tâches en cours (fork)
+        gtk_container_add(GTK_CONTAINER(frame_Right_Current_Task), right_Block_Current_Task);
+        gtk_grid_attach(GTK_GRID (gridMain), frame_Right_Current_Task, 950, 300, 1, 1);
+        
+        gtk_grid_attach(GTK_GRID (gridMain), frame_Right, 905, 400, 1, 1);
         
         Widgets.Export_Info = Export;
         

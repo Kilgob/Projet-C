@@ -12,7 +12,6 @@
 #include <string.h>
 #include <curl/curl.h>
 #include "file_control.h"
-
 struct Button_Connection{
     GtkWidget *connection_button;
     GtkWidget *connection_button_box;
@@ -58,31 +57,17 @@ struct json_conf{
 
 };
 
-struct InputLogin{
-    GtkWidget *InputTextIP;
-    GtkWidget *InputTextID;
-    GtkWidget *InputTextPass;
-};
-
 struct create_main_window{
     GtkWidget *oldWindow;
     GtkApplication *app;
     GtkWidget *LabelStatusConnection;
-    struct InputLogin *Login;
-//    int returnStatusConnexion;
+    GtkWidget *window_Main;
     struct json_conf *Json_conf;
-    struct json_conf *Json_conf_foa;//La variable au dessus correspond au bdd/schéma sélectionnée et non pas au premier bdd/schéma du fichier de conf (meilleur facon de récupérer le 1er ?) Encore utilisée ?
+    struct json_conf *Json_conf_foa;//La variable au dessus correspond au bdd/schéma sélectionnée et non pas au premier bdd/schéma du fichier de conf (meilleure facon de récupérer le 1er ?)
     struct Button_Connection *status_connection;
-//    struct json_conf *Servers_and_bdds;
 };
 
-#ifndef connectionBDD_h
-#define connectionBDD_h
-
-void connection_bdd(GtkWidget *widget, struct InputLogin *Data);
-
-#endif /* connectionBDD_h */
-
+void activate (GtkApplication *, struct create_main_window *);
 
 
 #ifndef WebService_h
@@ -102,10 +87,11 @@ struct Migration{
     struct json_conf *Json_conf_foa; //copie de la variable (c'est là que l'on a besoin de boucler sur toute la listes des bdds/schémas)
 };
 
+int ApiWs(char* ,char *, int , char *, char *);
 void get_Arrays_Base(json_object **array, struct json_conf *Json_conf);
 int requestToBDD(char *, char*);
 void migration(struct Migration *Datas);
-int migration_serv(struct Migration *, json_object *file, char *task, char *name_file);
+int migration_serv(struct Migration *, json_object *file, char *task, char *name_file, char *ID_Exec);
 int migration_datas(struct WidgetBDD *Widgets, json_object *file);
 
 #endif /* connectionBDD_h */
@@ -114,7 +100,6 @@ int migration_datas(struct WidgetBDD *Widgets, json_object *file);
 
 #ifndef main_window_h
 #define main_window_h
-
 //struct JSONReceiver{
 //    char table_Schema[50];
 //    char table_Name[50];

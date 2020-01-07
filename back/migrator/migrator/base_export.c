@@ -97,7 +97,7 @@ int mysqlVmysql_export(struct Json_infoserv *info_bdd, struct Json_export *info_
     char name_file[200];
 //    FILE *replicator_Dumps_file;
     char requete_dump[500];
-    sprintf(requete_dump, "mysqldump - h %s -P %s -u %s -p'%s' %s ", json_object_get_string(info_bdd->ip_source), json_object_get_string(info_bdd->port), json_object_get_string(info_bdd->user), json_object_get_string(info_bdd->pass_user), json_object_get_string(info_bdd->name_schema_source));
+    sprintf(requete_dump, "mysqldump -h %s -P %s -u %s -p'%s' %s ", json_object_get_string(info_bdd->ip_target), json_object_get_string(info_bdd->port), json_object_get_string(info_bdd->user), json_object_get_string(info_bdd->pass_user), json_object_get_string(info_bdd->name_schema_source));
     for(i = 0; i < info_export->nbr_arrays; i++){
         if(i > 0)
             strcat(requete_dump, " ");
@@ -118,65 +118,28 @@ int export_table_mysqlsql(struct Json_infoserv *info_bdd, struct Json_export *in
     char name_file[200];
 //    FILE *replicator_Dumps_file;
     char requete_dump[500];
+
+    sprintf(requete_dump, "mysqldump -h %s -P %s -u %s -p'%s' --no-data %s ", json_object_get_string(info_bdd->ip_source), json_object_get_string(info_bdd->port),json_object_get_string(info_bdd->user),json_object_get_string(info_bdd->pass_user),json_object_get_string(info_bdd->name_schema_source));
     for(i = 0; i < info_export->nbr_arrays; i++){
-        strcpy(requete_dump, "mysqldump");
-        strcat(requete_dump, " -h ");
-        strcat(requete_dump, json_object_get_string(info_bdd->ip_source));
-        strcat(requete_dump, " -P ");
-        strcat(requete_dump, json_object_get_string(info_bdd->port));
-        strcat(requete_dump, " -u ");
-        strcat(requete_dump, json_object_get_string(info_bdd->user));
-        strcat(requete_dump, " -p ");
-        strcat(requete_dump, json_object_get_string(info_bdd->pass_user));
-        strcat(requete_dump, " --no-data ");
-        strcat(requete_dump, json_object_get_string(info_bdd->name_schema_source));
-        strcat(requete_dump, " ");
+        if(i != 0)
+            strcat(requete_dump, " ");
         strcat(requete_dump, json_object_get_string(info_export[i].array));
-        strcat(requete_dump, " > ");
-        //crétion des noms de fichier
-        strcpy(name_file, replicator_Dumps);
-        strcat(name_file, info_bdd->uuid);
-        strcat(name_file, "_create_");
-        strcat(name_file, json_object_get_string(info_export[i].array));
-        strcat(name_file, ".sql");
-        strcat(requete_dump, name_file);
-        printf("requete d'export mysql : %s\n", requete_dump);
-//        system(replicator_Dumps);
     }
+    strcat(requete_dump, " > ");
+    //crétion des noms de fichier
+    strcpy(name_file, replicator_Dumps);
+    strcat(name_file, info_bdd->uuid);
+    strcat(name_file, "_create_");
+    strcat(name_file, json_object_get_string(info_export[i].array));
+    strcat(name_file, ".sql");
+    strcat(requete_dump, name_file);
+    printf("requete d'export mysql : %s\n", requete_dump);
+//        system(replicator_Dumps);
     return 0;
 }
 int export_table_mysqlcsv(struct Json_infoserv *info_bdd, struct Json_export *info_export, char *replicator_Dumps){
-    int i;
-    char name_file[200];
-//    FILE *replicator_Dumps_file;
-    char requete_dump[1000];
-    printf("port : %s\n", json_object_get_string(info_bdd->port));
-    for(i = 0; i < info_export->nbr_arrays; i++){
-//        strcpy(requete_dump, "mysqldump");
-//        strcat(requete_dump, " -h ");
-//        strcat(requete_dump, json_object_get_string(info_bdd->ip_source));
-//        strcat(requete_dump, " -P ");
-//        strcat(requete_dump, json_object_get_string(info_bdd->port));
-//        strcat(requete_dump, " -u ");
-//        strcat(requete_dump, json_object_get_string(info_bdd->user));
-//        strcat(requete_dump, " -p ");
-//        strcat(requete_dump, json_object_get_string(info_bdd->pass_user));
-//        strcat(requete_dump, " --no-data ");
-//        strcat(requete_dump, json_object_get_string(info_bdd->name_schema_source));
-//        strcat(requete_dump, " ");
-//        strcat(requete_dump, json_object_get_string(info_export[i].array));
-//        strcat(requete_dump, " > ");
-//        //crétion des noms de fichier
-//        strcpy(name_file, replicator_Dumps);
-//        strcat(name_file, info_bdd->uuid);
-//        strcat(name_file, "_create_");
-//        strcat(name_file, json_object_get_string(info_export[i].array));
-//        strcat(name_file, ".sql");
-//        strcat(requete_dump, name_file);
-//        printf("requete d'export mysql : %s\n", requete_dump);
-////        system(replicator_Dumps);
-    }
-    return 0;
+
+    return 1;
 }
 int export_table_mysqlcmd(struct Json_infoserv *Json_infoserv, struct Json_export *Json_export, char *replicator_Dumps){
     return 1;
@@ -230,36 +193,35 @@ int verticaVvertica_export(struct Json_infoserv *info_bdd, struct Json_export *i
 //    FILE *replicator_Dumps_file;
     char requete_dump[500];
 //    char requete_dump_temp[50];
-    sprintf(requete_dump, "vsql -h %s -p %s -U %s -d %s -w %s -c \"SELECT export_tables('',", json_object_get_string(info_bdd->ip_source), json_object_get_string(info_bdd->port), json_object_get_string(info_bdd->user), /*-d*/json_object_get_string(info_bdd->name_db_source), json_object_get_string(info_bdd->pass_user));
     for(i = 0; i < info_export->nbr_arrays; i++){
-        if(i > 0)
-            strcat(requete_dump, ", ");
-        char temp[300];
-        sprintf(temp,"'%s.%s'", json_object_get_string(info_bdd->name_schema_source), json_object_get_string(info_export[i].array));
-        strcat(requete_dump, temp);
-    }
-    strcat(requete_dump, ")\" -A -P footer=off -t -o ");
+        sprintf(requete_dump, "vsql -h %s -p %s -U %s -d %s -w %s -c \"SELECT export_tables('','%s.%s'", json_object_get_string(info_bdd->ip_source), json_object_get_string(info_bdd->port), json_object_get_string(info_bdd->user), /*-d*/json_object_get_string(info_bdd->name_db_source), json_object_get_string(info_bdd->pass_user), json_object_get_string(info_bdd->name_schema_source), json_object_get_string(info_export[i].array));
+
+    //        char temp[300];
+    //        sprintf(temp,"'%s.%s'", json_object_get_string(info_bdd->name_schema_source), json_object_get_string(info_export[i].array));
+    //        strcat(requete_dump, temp);
     
-    //crétion des noms de fichier
-    sprintf(name_file,"%s%s_dump.sql", replicator_Dumps, info_bdd->uuid);
-    sprintf(name_file_dump_temp,"%s%s_dump_tmp.sql", replicator_Dumps, info_bdd->uuid);
-    strcat(requete_dump, name_file_dump_temp);
-    system(requete_dump);
-    printf("requete d'export vertica (vers vertica) : %s\n", requete_dump);
-    
-// modifier le schema R1ODSGL1 par DBFRED
-//     sed  's/R1ODSGL1/DBFRED/' uuid_dump_tmp.sql >uuid_dump.sql
-    sprintf(requete_dump, "sed 's/%s/%s/' %s > %s",json_object_get_string(info_bdd->name_schema_source), json_object_get_string(info_bdd->name_schema_target), name_file_dump_temp, name_file);
-    system(requete_dump);
-//     rm -f uuid_create_tabvilles.sql_tmp
-    remove(name_file_dump_temp);
+        strcat(requete_dump, ")\" -A -P footer=off -t -o ");
+        
+        //crétion des noms de fichier
+        sprintf(name_file,"%s%s_dump_%s.sql", replicator_Dumps, info_bdd->uuid, json_object_get_string(info_export[i].array));
+        sprintf(name_file_dump_temp,"%s%s_dump_tmp.sql", replicator_Dumps, info_bdd->uuid);
+        strcat(requete_dump, name_file_dump_temp);
+        system(requete_dump);
+        printf("requete d'export vertica (vers vertica) : %s\n", requete_dump);
+        
+    // modifier le schema R1ODSGL1 par DBFRED
+    //     sed  's/R1ODSGL1/DBFRED/' uuid_dump_tmp.sql >uuid_dump.sql
+        sprintf(requete_dump, "sed 's/%s/%s/' %s > %s",json_object_get_string(info_bdd->name_schema_source), json_object_get_string(info_bdd->name_schema_target), name_file_dump_temp, name_file);
+        system(requete_dump);
+    //     rm -f uuid_create_tabvilles.sql_tmp
+        remove(name_file_dump_temp);
     
 //    vsql -h debian10-2 -p 5433 -U dbadmin -d P1odsgl1 -w admin -c "SELECT * FROM r1odsgl1.tabvilles" -o uuid_data_tabvilles.csv -A -P footer=off  // dump des datas
 
-    for(i = 0; i < info_export->nbr_arrays ; i++){
-            sprintf(name_file,"%s%s_data_%s.csv", replicator_Dumps, info_bdd->uuid, json_object_get_string(info_export[i].array));
-            sprintf(requete_dump, "vsql -h %s -p %s -U %s -d %s -w %s -c \"SELECT * FROM %s.%s\" -o %s -A -P footer=off " , json_object_get_string(info_bdd->ip_source), json_object_get_string(info_bdd->port), json_object_get_string(info_bdd->user), json_object_get_string(info_bdd->name_db_source), json_object_get_string(info_bdd->pass_user), json_object_get_string(info_bdd->name_schema_source), json_object_get_string(info_export[i].array), name_file);
-           system(requete_dump);
+//    for(i = 0; i < info_export->nbr_arrays ; i++){
+        sprintf(name_file,"%s%s_data_%s.csv", replicator_Dumps, info_bdd->uuid, json_object_get_string(info_export[i].array));
+        sprintf(requete_dump, "vsql -h %s -p %s -U %s -d %s -w %s -c \"SELECT * FROM %s.%s\" -o %s -A -P footer=off " , json_object_get_string(info_bdd->ip_source), json_object_get_string(info_bdd->port), json_object_get_string(info_bdd->user), json_object_get_string(info_bdd->name_db_source), json_object_get_string(info_bdd->pass_user), json_object_get_string(info_bdd->name_schema_source), json_object_get_string(info_export[i].array), name_file);
+       system(requete_dump);
        }
     
     return 0;

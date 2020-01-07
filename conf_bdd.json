@@ -30,6 +30,17 @@
         "bdd_type":"mysql"
       },
       {
+        "api_route":"/mysql2/mysql2",
+        "schema":"dbhuissier",
+        "name_db":"db",
+        "port_api":"5002",
+        "port_mysql":"3307",
+        "pass_root":"Wratsn01",
+        "user_mysql":"root",
+        "pass_mysql":"Wratsn01",
+        "bdd_type":"mysql"
+      },
+      {
         "api_route":"/vertica1/vertica1",
         "schema":"SCHEMA1",
         "name_db":"DBFRED",

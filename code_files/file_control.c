@@ -10,6 +10,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <dirent.h>
 
 #include "file_control.h"
 #include "xml_parser.h"
@@ -23,7 +24,7 @@ int check_file_conf(){
         return 0;
     }
     printf("/!\\Il manque le fichier de conf ! /!\\");
-    printf("chemin d'accès standard au fichier : /Users/fred/OneDrive/ESGI/Annee2/ProjetC/conf_bdd.json");
+    printf("chemin d'accès au fichier : /Users/fred/OneDrive/ESGI/Annee2/ProjetC/conf_bdd.json");
    return 1;
 }
 
@@ -236,3 +237,72 @@ int export_XML(struct WidgetBDD *Datas, FILE *fileSave){
     return 0;
 }
 
+
+int block_status_get(struct Block_Status *Data){
+    struct dirent * ent;
+    DIR * rep;
+    double i;
+    char fileDirectory[400];
+//        if(Data->list_Element != NULL){
+//            free(Data->list_Element);
+//        }
+    
+    delete(Data->statut_Task_Block);
+    i = 0;//indique le nombre de fichier
+    sprintf(fileDirectory, "%s/conf/",getenv("REPLICATOR_HOME"));
+    rep = opendir(fileDirectory);
+    if (rep != NULL){
+        while ((ent = readdir(rep)) != NULL)
+        {
+            if(strcmp(ent->d_name, ".") && strcmp(ent->d_name, "..") && strcmp(ent->d_name, ".DS_Store"))
+                i++;
+        }
+//        Data->list_Element = malloc(sizeof(GtkWidget *) * i);//Moins les 3 fichiers "."/".."/"DS store"
+        gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(Data->progress_Bar), i/ 10);//Nombre compris entre 0 et 1
+        if(i != 0)
+            gtk_progress_bar_set_pulse_step(GTK_PROGRESS_BAR(Data->progress_Bar), 1/i);
+        else
+            gtk_progress_bar_set_pulse_step(GTK_PROGRESS_BAR(Data->progress_Bar), 1);
+        
+//        printf("nombre de fraction : %f\n result division : %f chemin à paroucir : %f\nActuel chemain de la barre : %f\n", gtk_progress_bar_get_fraction(GTK_PROGRESS_BAR(Data->progress_Bar)), i/10, 1/i, gtk_progress_bar_get_pulse_step(GTK_PROGRESS_BAR(Data->progress_Bar)));
+        if((Data->list_Element = malloc(sizeof(GtkWidget *) * i)) == NULL)
+            return 1;;
+        
+    }
+    gtk_progress_bar_pulse (GTK_PROGRESS_BAR(Data->progress_Bar));
+    closedir(rep);
+    rep = opendir(fileDirectory);
+    if (rep != NULL){
+        i = 0;
+        while ((ent = readdir(rep)) != NULL)
+        {
+            if(strcmp(ent->d_name, ".") && strcmp(ent->d_name, "..") && strcmp(ent->d_name, ".DS_Store")){
+                Data->list_Element[(int)i] = gtk_label_new(ent->d_name);
+                printf("Nom du label : %s\n",gtk_label_get_label(GTK_LABEL(Data->list_Element[(int)i])));
+    //            gtk_container_add(GTK_CONTAINER(Data->statut_Task_Block), Data->list_Element[(int)i]);
+                gtk_box_pack_start(GTK_BOX(Data->statut_Task_Block), Data->list_Element[(int)i], FALSE, FALSE, 0);
+                gtk_widget_show(Data->list_Element[(int)i]);
+                i++;
+            }
+        }
+        
+    }
+    gtk_widget_show(Data->statut_Task_Block);
+    closedir(rep);
+    return 1;
+}
+
+
+
+void delete(GtkWidget *Info){
+    GList *children, *iter;
+
+    children = gtk_container_get_children(GTK_CONTAINER(Info));
+    for(iter = children; iter != NULL; iter = g_list_next(iter))
+    {
+        g_object_ref(G_OBJECT(iter->data)); //Pour ajouter une ref sinon lors du remove
+        gtk_container_remove(GTK_CONTAINER(Info), GTK_WIDGET(iter->data));
+        
+    }
+    g_list_free(children);
+}

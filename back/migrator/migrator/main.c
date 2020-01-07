@@ -231,7 +231,7 @@ void error_parmtr(char error[]){//affiche une erreur, l'ajoute dans un fichier d
 
 
 int parameter(int nr, const char **parameters, struct Json_infoserv *Json_infoserv, struct Bdd_Test *Bdd_Test){//verif pour ne pas depasser la taille des inputs (envisagé des mallocs), verif des paramètres
-    int i, g, status = 0;
+    int i, status = 0;
     for(i = 1; i < nr ; i++){
         status = 0;
         switch (parameters[i][1]) {
